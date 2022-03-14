@@ -41,8 +41,16 @@ let welcomeMessageBuild = () => {
   }
   return str
 }
-
+let messageLoad = (socket, messageCount) => {
+  socket.emit("message", message)
+  if(messages[messageCount + 1]) {
+    messageLoad(socket, messageCount + 1)
+  }
+}
 io.on("connection", (socket) => {
+  for(let i = 0; i <= messages.length - 1; i++) {
+    socket.emit("message", messages[i])
+  }
   socket.on("messageFirst", (data) => {
     let user = new User({
       username: data,

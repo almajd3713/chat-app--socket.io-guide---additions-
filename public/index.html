@@ -199,12 +199,14 @@
         tag: "div",
         className: "message",
         textContent: `${message.user.username}: ${message.content}`,
-        subNodes: replyBtn
       })
-      replyLogic(replyBtn, message)
+      if(currentUser) {
+        message.messageStructure.appendChild(replyBtn)
+        replyLogic(replyBtn, message)
+      }
       messagesDiv.appendChild(message.messageStructure)
-      console.log(messagesDiv.children[messagesDiv.children.indexOf(message.messageStructure)])
-      if (viewportCheckEl && isInViewport(view)) {
+      let viewportCheckEl = Array.from(messagesDiv.children)[Array.from(messagesDiv.children).indexOf(message.messageStructure) - 5]
+      if (viewportCheckEl && isInViewport(viewportCheckEl)) {
         message.messageStructure.scrollIntoView()
       }
       if (message.replyTo) {
@@ -253,7 +255,6 @@
 
     let replyFormSwitch = false
     let replyLogic = (replyBtn, message) => {
-      if(currentUser) {
       let replyMode = false
       replyBtn.addEventListener("click", e => {
         if(!replyMode) {
@@ -270,7 +271,6 @@
           input.placeholder = ``
         }
       })
-      } else pushNotification("you can't reply without signing in !", "fi")
     };
     function isInViewport(element) {
         const rect = element.getBoundingClientRect();
