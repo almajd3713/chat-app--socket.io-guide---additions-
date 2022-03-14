@@ -14,8 +14,10 @@ function createNode(props) {
   }
   if (props.textContent) { node.innerHTML = props.textContent }
   if (props.subNodes) {
-    if (Array.isArray(props.subNodes)) props.subNodes.forEach(subNode => {
-      node.appendChild(createNode(subNode))
+    if(props.subNodes instanceof HTMLElement) node.appendChild(props.subNodes)
+    else if (Array.isArray(props.subNodes)) props.subNodes.forEach(subNode => {
+      if(subNode instanceof HTMLElement) node.appendChild(subNode)
+      else node.appendChild(createNode(subNode))
     }); else node.appendChild(createNode(props.subNodes))
   }
   if(props.onClick) node.onclick = onClick

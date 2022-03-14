@@ -3,6 +3,7 @@ export class Message {
   constructor(messageObject) {
     this.content = messageObject.content
     this.user = messageObject.user
+    this.messageStructure;
   }
   auth(user) {
     if(user === this.user.Id) return true

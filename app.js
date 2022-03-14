@@ -48,12 +48,18 @@ io.on("connection", (socket) => {
       username: data,
       userId: socket.id
     })
+    socket.user = user
     let onlinePeopleList = welcomeMessageBuild()
     onlinePeople.push(user)
     io.emit("hi", `${user.username} has joined !`, onlinePeopleList)
     socket.emit("initUser", user)
   })
-  socket.on("disconnect", () => io.emit("fi", socket.username !== "" ? socket.username : "someone"))
+  socket.on("disconnect", () => {
+    if(socket.user) {
+      io.emit("fi", socket.user)
+      onlinePeople = onlinePeople.filter(user => user.userId !== socket.user.userId)
+    }
+  })
   socket.on("message", (data, user) => {
     let message = new Message({content: data, user: user})
     messages.push(message)
@@ -63,5 +69,11 @@ io.on("connection", (socket) => {
   
   socket.on("typing", () => {
     socket.broadcast.emit("typing", socket.username)
+  })
+
+  socket.on("editSend", (val, message) => {
+    let desiredMessage = messages.find(mes => mes.content === message.content && mes.user.userId === message.user.userId)
+    desiredMessage.content = val
+    socket.broadcast.emit("editReceive", val, message)
   })
 })

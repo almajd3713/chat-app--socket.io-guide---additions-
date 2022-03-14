@@ -51,18 +51,31 @@
     }
 
     .messages > div {
-      padding: 0.5rem 1rem;
+      height: 2.5rem;
+      line-height: 2.5rem;
+      padding: 0 1rem;
+      border-bottom: 1px solid #878787;
     }
 
     .messages > div:nth-child(odd) {
       background: #efefef;
     }
 
-    .typing {
+    .typing:not(:empty) {
       position: fixed;
       bottom: 5%;
       padding: .5rem 2rem;
-      color: gray
+      color: gray;
+      background-color: white;
+    }
+    .configBtn {
+      text-align: center;
+      background-color: gray;
+      display: inline-block;
+      height: 100%;
+      width: 3rem;
+      color: white;
+      float: right;
     }
   </style>
 </head>
@@ -85,6 +98,7 @@
     let messagesDiv = document.querySelector('.messages');
     let typingMessage = document.querySelector(".typing")
     let currentUser
+    let printedMessages = []
 
     let firstMessage = true
     form.addEventListener("submit", (e) => {
@@ -103,16 +117,49 @@
     });
 
     socket.on("messageAdmin", (message) => {
-      messagesDiv.appendChild(createNode({
+      let editBtn = createNode({
         tag: "div",
-        textContent: `you: ${message.content}`
-      }))
+        textContent: "edit",
+        className: "configBtn"
+      })
+      message.messageStructure = createNode({
+        tag: "div",
+        textContent: `you: ${message.content}`,
+        subNodes: editBtn
+      })
+      messagesDiv.appendChild(message.messageStructure)
+      printedMessages.push(message)
+      editBtn.addEventListener("click", e => {
+        message.messageStructure.textContent = ""
+        message.messageStructure.prepend(createNode({
+          tag: "form",
+          subNodes: {
+            tag: "input"
+          }
+        }))
+        message.messageStructure.children[0].children[0].focus()
+        message.messageStructure.children[0].addEventListener("submit", e => {
+          e.preventDefault()
+          let val = e.srcElement.children[0].value
+          message.messageStructure.textContent = `you: ${val} (edited)`
+          message.messageStructure.appendChild(editBtn)
+          socket.emit("editSend", val, message)
+          e.srcElement.children[0].remove()
+        })
+      })
     });
+    socket.on("editReceive", (val, message) => {
+      let desiredMessage = printedMessages.find(mes => mes.content === message.content && mes.user.userId === message.user.userId)
+      desiredMessage.content = val
+      desiredMessage.messageStructure.textContent = `${desiredMessage.user.username}: ${val} (edited)`
+    })
     socket.on("message", (message) => {
-      messagesDiv.appendChild(createNode({
+      message.messageStructure = createNode({
         tag: "div",
         textContent: `${message.user.username}: ${message.content}`
-      }))      
+      })
+      messagesDiv.appendChild(message.messageStructure)
+      printedMessages.push(message)
     })
 
     socket.on("initUser", (user) => currentUser = user)
@@ -145,7 +192,7 @@
       console.log(welcomeMessage)
     });
     socket.on("fi", (data) => {
-      pushNotification(`${data} has left us, how sedj /:`, "fi")
+      pushNotification(`${data.username} has left us, how sedj /:`, "fi")
     });
   </script>
 </body>
