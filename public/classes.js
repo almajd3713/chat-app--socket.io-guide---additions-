@@ -4,6 +4,7 @@ export class Message {
     this.content = messageObject.content
     this.user = messageObject.user
     this.messageStructure;
+    this.replyTo = false;
   }
   auth(user) {
     if(user === this.user.Id) return true

@@ -49,18 +49,29 @@
       margin: 0;
       padding: 0;
     }
+    .messages input {
+      width: 30rem
+    }
 
-    .messages > div {
+    .messages > .message {
       height: 2.5rem;
       line-height: 2.5rem;
       padding: 0 1rem;
       border-bottom: 1px solid #878787;
     }
 
-    .messages > div:nth-child(odd) {
+    .messages > .message:nth-child(odd) {
       background: #efefef;
     }
 
+    .replyLabel {
+      height: 1rem;
+      padding-left: 1rem;
+      font-size: .75rem;
+      line-height: .75rem;
+      background-color: lightcoral;
+      color: darkslategray
+    }
     .typing:not(:empty) {
       position: fixed;
       bottom: 5%;
@@ -76,6 +87,7 @@
       width: 3rem;
       color: white;
       float: right;
+      margin-left: 2rem
     }
   </style>
 </head>
@@ -109,7 +121,15 @@
           input.value = ""
           input.placeholder = ""
           firstMessage = false
-        } else {
+        } else if(replyFormSwitch) {
+          socket.emit("message", input.value, currentUser, replyFormSwitch)
+          input.value = ""
+          replyFormSwitch.messageStructure.style.backgroundColor = "initial"
+          replyFormSwitch = false
+          replyMode = false
+          input.placeholder = ``
+        }
+        else {
           socket.emit("message", input.value, currentUser)
           input.value = ""
         }
@@ -124,17 +144,30 @@
       })
       message.messageStructure = createNode({
         tag: "div",
+        className: "message",
         textContent: `you: ${message.content}`,
         subNodes: editBtn
       })
       messagesDiv.appendChild(message.messageStructure)
+      let viewportCheckEl = Array.from(messagesDiv.children)[Array.from(messagesDiv.children).indexOf(message.messageStructure) - 5]
+      if (viewportCheckEl && isInViewport(viewportCheckEl)) {
+        message.messageStructure.scrollIntoView()
+      }
+      if(message.replyTo) {
+        messagesDiv.insertBefore(createNode({
+          tag: "div",
+          className: "replyLabel",
+          textContent: `replying to ${message.replyTo.user.username}: ${message.replyTo.content}`
+        }), message.messageStructure)
+      }
       printedMessages.push(message)
       editBtn.addEventListener("click", e => {
         message.messageStructure.textContent = ""
         message.messageStructure.prepend(createNode({
           tag: "form",
           subNodes: {
-            tag: "input"
+            tag: "input",
+            attributes: [["value", message.content]]
           }
         }))
         message.messageStructure.children[0].children[0].focus()
@@ -148,17 +181,39 @@
         })
       })
     });
+    
     socket.on("editReceive", (val, message) => {
       let desiredMessage = printedMessages.find(mes => mes.content === message.content && mes.user.userId === message.user.userId)
-      desiredMessage.content = val
-      desiredMessage.messageStructure.textContent = `${desiredMessage.user.username}: ${val} (edited)`
+      if(desiredMessage) {
+        desiredMessage.content = val
+        desiredMessage.messageStructure.textContent = `${desiredMessage.user.username}: ${val} (edited)`
+      }
     })
     socket.on("message", (message) => {
+      let replyBtn = createNode({
+        tag: "div",
+        textContent: "reply",
+        className: "configBtn"
+      })
       message.messageStructure = createNode({
         tag: "div",
-        textContent: `${message.user.username}: ${message.content}`
+        className: "message",
+        textContent: `${message.user.username}: ${message.content}`,
+        subNodes: replyBtn
       })
+      replyLogic(replyBtn, message)
       messagesDiv.appendChild(message.messageStructure)
+      console.log(messagesDiv.children[messagesDiv.children.indexOf(message.messageStructure)])
+      if (viewportCheckEl && isInViewport(view)) {
+        message.messageStructure.scrollIntoView()
+      }
+      if (message.replyTo) {
+        messagesDiv.insertBefore(createNode({
+          tag: "div",
+          className: "replyLabel",
+          textContent: `replying to ${message.replyTo.user.username}: ${message.replyTo.content}`
+        }), message.messageStructure)
+      }
       printedMessages.push(message)
     })
 
@@ -181,6 +236,7 @@
 
     const pushNotification = (data, type) => {
       let el = document.createElement("div")
+      el.className = "message"
       el.textContent = data
       type === "hi" ? el.style.color = "#31d2d8" :
       type === "fi" ? el.style.color = "#e57171" : null;
@@ -194,6 +250,37 @@
     socket.on("fi", (data) => {
       pushNotification(`${data.username} has left us, how sedj /:`, "fi")
     });
+
+    let replyFormSwitch = false
+    let replyLogic = (replyBtn, message) => {
+      if(currentUser) {
+      let replyMode = false
+      replyBtn.addEventListener("click", e => {
+        if(!replyMode) {
+          replyMode = true
+          replyFormSwitch = message
+          typingMessage = `replying to ${message.user.username}...`
+          message.messageStructure.style.backgroundColor = "#f8d362"
+          input.placeholder = `replying to ${message.user.username}...`
+          input.focus()
+        } else {
+          replyMode = false
+          replyFormSwitch = false
+          message.messageStructure.style.backgroundColor = "initial"
+          input.placeholder = ``
+        }
+      })
+      } else pushNotification("you can't reply without signing in !", "fi")
+    };
+    function isInViewport(element) {
+        const rect = element.getBoundingClientRect();
+        return (
+          rect.top >= 0 &&
+          rect.left >= 0 &&
+          rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+          rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+      }
   </script>
 </body>
 

@@ -60,8 +60,9 @@ io.on("connection", (socket) => {
       onlinePeople = onlinePeople.filter(user => user.userId !== socket.user.userId)
     }
   })
-  socket.on("message", (data, user) => {
+  socket.on("message", (data, user, replyMessage) => {
     let message = new Message({content: data, user: user})
+    if(replyMessage) message.replyTo = replyMessage
     messages.push(message)
     socket.emit("messageAdmin", message)
     socket.broadcast.emit("message", message)
