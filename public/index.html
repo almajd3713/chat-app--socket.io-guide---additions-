@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+      #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+      #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
+      #input:focus { outline: none; }
+      #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
+
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages > li { padding: 0.5rem 1rem; }
+      #messages > li:nth-child(odd) { background: #efefef; }
+
+      .typing {
+        position: fixed;
+        bottom: 5%;
+        padding: .5rem 2rem;
+        color: gray
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <h4 class="typing"></h4>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" placeholder="What's your name ?"/><button>Send</button>
+    </form>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      let socket = io();
+
+      let form = document.getElementById('form');
+      let input = document.getElementById('input');
+      let messages = document.getElementById('messages');
+      let typingMessage = document.querySelector(".typing")
+      
+      let firstMessage = false
+      form.addEventListener("submit", (e) => {
+        e.preventDefault()
+        if(input.value) {
+          if(!firstMessage) {
+            socket.emit("messageFirst", input.value)
+            input.value = ""
+            input.placeholder = ""
+            firstMessage = true
+          } else {
+            pushMessage(`you: ${input.value}`)
+            socket.emit("message", input.value)
+            input.value = ""
+          }
+        }
+      });
+
+      let typeTimeout = null
+      input.addEventListener("input", () => {
+        socket.emit("typing")
+      })
+
+      socket.on("typing", (username) => {
+        if(username) {
+          clearTimeout(typeTimeout)
+          typingMessage.textContent = `${username} is typing...`
+          typeTimeout = setTimeout(() => {
+            typingMessage.textContent = ""
+          }, 1000);
+        }
+      })
+      
+      const pushMessage = (data, type) => {
+        let el = document.createElement("li")
+        el.textContent = data
+        type === "hi" ? el.style.color = "#31d2d8":
+        type === "fi" ? el.style.color = "#e57171" : null;
+        messages.appendChild(el)
+      }
+
+      socket.on("message", (data) => {
+        typingMessage.textContent = ""
+        pushMessage(data, "message")
+      });
+      socket.on("hi", (data, welcomeMessage) => {
+        pushMessage(data, "hi")
+        console.log(welcomeMessage)
+      });
+      socket.on("fi", (data) => {
+        pushMessage(`${data} has left us, how sad ):`, "fi")
+      });
+    </script>
+  </body>
+</html>
