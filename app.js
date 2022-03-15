@@ -27,27 +27,29 @@ let io = new Server(server)
 let messagePOST = (message) => {
   let database = JSON.parse(fs.readFileSync("./public/database.json"))
   database.push([message.user.userId, message.content])
-  console.log(database)
   fs.writeFileSync("./public/database.json", JSON.stringify(database))
 }
-// let messageGET = (socket) => {
-//   let database = JSON.parse(fs.readFileSync("./public/database.json"))
-//   database.forEach(item => {
-//     let message =  new Message({
-//       content: item[1],
-//       user: findUser(item)
-//     })
-//     socket.emit("message", message)
-//   })
-// }
-// let findUser = (item) => {
-//   let person = onlinePeople.find(entity => item[0] === entity.user.userId)
-//   if(person) return person
-//   else return new User({username: `${item[0]} (offline)`, color: "#000", userId: item[0]})
-// }
+let messageGET = () => {
+  let database = JSON.parse(fs.readFileSync("./public/database.json"))
+  let messages = database.map(data => {
+    return new Message({
+      content: data[1],
+      user: findUser(data[0])
+    })
+  })
+  return messages
+}
+let findUser = (id) => {
+  let user = onlinePeople.find(person => person.userId === id)
+  if(user) return user
+  else return new User({
+    username: `${id.substr(0, 5)} (offline)`,
+    id: id,
+    color: "#000"
+  })
+}
 
 let onlinePeople = []
-let messages = []
 let colorPicker = () => {
   let colors = ["#C51D34", "#8A6643", "#3E5F8A", "#C93C20", "#00BB2D", "#EA899A", "#063971", "#C6A664", "#84C3BE", "#382C1E"]
   return colors[Math.ceil(Math.random() * colors.length - 1)]
@@ -70,10 +72,9 @@ let welcomeMessageBuild = () => {
 }
 
 io.on("connection", (socket) => {
-  messages.forEach(message => {
+  messageGET(socket).forEach(message => {
     socket.emit("message", message)
   })
-  // messageGET(socket)
   socket.on("messageFirst", (data) => {
     let user = new User({
       username: data,
@@ -95,8 +96,7 @@ io.on("connection", (socket) => {
   socket.on("message", (data, user, replyMessage) => {
     let message = new Message({content: data, user: user})
     if(replyMessage) message.replyTo = replyMessage
-    messages.push(message)
-    // messagePOST(message)
+    messagePOST(message)
     socket.emit("messageAdmin", message)
     socket.broadcast.emit("message", message)
   })
