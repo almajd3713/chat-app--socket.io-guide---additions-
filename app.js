@@ -126,7 +126,7 @@ io.on("connection", (socket) => {
 
   socket.on("purgeAdmin", password => {
     if(password === "galung2020") {
-      fs.writeFileSync("./public/database.json", "[]")
+      messages = []
       io.emit("refresh")
       socket.emit("purgeStatus", true)
     } else {
