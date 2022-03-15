@@ -2,7 +2,7 @@
 function createNode(props) {
   let node = document.createElement(props.tag || "div")
   if (props.className) {
-    if (Array.isArray(props.className)) for (let className in props.className) { node.classList.add(className) }
+    if (Array.isArray(props.className)) props.className.forEach(classN => node.classList.add(classN))
     else node.className = props.className
   }
   if (props.id) { node.setAttribute("id", props.id) }

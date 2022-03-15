@@ -5,6 +5,8 @@ import {dirname} from "path"
 import {fileURLToPath} from "url"
 const __dirname = dirname(fileURLToPath(import.meta.url))
 // end of fix
+import fs from "fs"
+let database = fs.readFileSync("./public/database.json")
 
 import {User, Message} from "./public/classes.js"
 let express = require("express")
@@ -22,6 +24,10 @@ app.get("/", (req, res) => {
 
 let server = app.listen(port, () => console.log("listening on *:3000"))
 let io = new Server(server)
+
+let messagePOST = (message) => {
+  
+}
 
 let onlinePeople = []
 let messages = []

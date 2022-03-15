@@ -89,6 +89,8 @@
       float: right;
       margin-left: 2rem
     }
+
+    .util-messageSender {text-align: right; padding-right: 1rem;}
   </style>
 </head>
 
@@ -144,8 +146,9 @@
       })
       message.messageStructure = createNode({
         tag: "div",
-        className: "message",
-        textContent: `you: ${message.content}`,
+        className: ["message", "util-messageSender"],
+        attributes: [["dir", "auto"]],
+        textContent: `${message.content}`,
         subNodes: editBtn
       })
       messagesDiv.appendChild(message.messageStructure)
@@ -174,7 +177,7 @@
         message.messageStructure.children[0].addEventListener("submit", e => {
           e.preventDefault()
           let val = e.srcElement.children[0].value
-          message.messageStructure.textContent = `you: ${val} (edited)`
+          message.messageStructure.textContent = `${val} (edited)`
           message.messageStructure.appendChild(editBtn)
           socket.emit("editSend", val, message)
           e.srcElement.children[0].remove()
@@ -198,7 +201,8 @@
       message.messageStructure = createNode({
         tag: "div",
         className: "message",
-        textContent: `${message.user.username}: ${message.content}`,
+        attributes: [["dir", "auto"]],
+        textContent: `${message.user.username}: <span dir="auto">${message.content}</span>`,
       })
       if(currentUser) {
         message.messageStructure.appendChild(replyBtn)
@@ -240,8 +244,8 @@
       let el = document.createElement("div")
       el.className = "message"
       el.textContent = data
-      type === "hi" ? el.style.color = "#31d2d8" :
-      type === "fi" ? el.style.color = "#e57171" : null;
+      type === "hi" ? el.style.backgroundColor = "#31d2d8" :
+      type === "fi" ? el.style.backgroundColor = "#e57171" : null;
       messagesDiv.appendChild(el)
     }
 
