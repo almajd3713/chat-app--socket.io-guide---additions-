@@ -4,6 +4,8 @@ export class Message {
     this.content = messageObject.content
     this.user = messageObject.user
     this.messageStructure;
+    this.isImage = messageObject.isImage;
+    this.image = messageObject.image
     this.replyTo = false;
   }
   auth(user) {
