@@ -221,6 +221,10 @@
           imageTab.document.body.innerHTML = `<img src="${imgUrl}" style="width: 80vwrem"/>`
         }
         messagesDiv.appendChild(message.messageStructure)
+        let viewportCheckEl = Array.from(messagesDiv.children)[Array.from(messagesDiv.children).indexOf(message.messageStructure) - 5]
+        if (viewportCheckEl && isInViewport(viewportCheckEl)) {
+          message.messageStructure.scrollIntoView()
+        }
       }
     });
     
@@ -280,6 +284,10 @@
           imageTab.document.body.innerHTML = `<img src="${imgUrl}" style="width: 80vwrem"/>`
         }
         messagesDiv.appendChild(message.messageStructure)
+        let viewportCheckEl = Array.from(messagesDiv.children)[Array.from(messagesDiv.children).indexOf(message.messageStructure) - 5]
+        if (viewportCheckEl && isInViewport(viewportCheckEl)) {
+          message.messageStructure.scrollIntoView()
+        }
       }
     })
 
