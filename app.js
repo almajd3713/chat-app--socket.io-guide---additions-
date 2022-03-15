@@ -127,10 +127,9 @@ io.on("connection", (socket) => {
   socket.on("purgeAdmin", password => {
     if(password === "galung2020") {
       messages = []
-      io.emit("refresh")
-      socket.emit("purgeStatus", true)
+      io.emit("purgeStatus", true)
     } else {
-      io.emit("purgeStatus", false)
+      socket.emit("purgeStatus", false)
     }
   })
 
