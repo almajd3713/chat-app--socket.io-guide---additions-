@@ -89,6 +89,13 @@
       float: right;
       margin-left: 2rem
     }
+    .messageHeader {
+      display: inline-block;
+      height: 100%;
+      text-align: center;
+      padding:0 2rem;
+      margin-right: 1rem;
+    }
 
     .util-messageSender {text-align: right; padding-right: 1rem;}
   </style>
@@ -193,6 +200,7 @@
       }
     })
     socket.on("message", (message) => {
+      console.log(message)
       let replyBtn = createNode({
         tag: "div",
         textContent: "reply",
@@ -201,8 +209,7 @@
       message.messageStructure = createNode({
         tag: "div",
         className: "message",
-        attributes: [["dir", "auto"]],
-        textContent: `${message.user.username}: <span dir="auto">${message.content}</span>`,
+        textContent: `<span class="messageHeader" style="background-color: ${message.user.color}; color: ${!colorIsLight(message.user.color) ? "#eee" : "initial"}">${message.user.username}</span> <span dir="auto">${message.content}</span>`,
       })
       if(currentUser) {
         message.messageStructure.appendChild(replyBtn)
@@ -277,14 +284,22 @@
       })
     };
     function isInViewport(element) {
-        const rect = element.getBoundingClientRect();
-        return (
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-          rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-        );
-      }
+      const rect = element.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      );
+    }
+    function colorIsLight(color) {
+      const hex = color.replace('#', '');
+      const c_r = parseInt(hex.substr(0, 2), 16);
+      const c_g = parseInt(hex.substr(2, 2), 16);
+      const c_b = parseInt(hex.substr(4, 2), 16);
+      const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+      return brightness > 155;
+    }
   </script>
 </body>
 

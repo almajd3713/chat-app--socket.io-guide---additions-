@@ -16,5 +16,6 @@ export class User {
   constructor(userObject) {
     this.username = userObject.username
     this.userId = userObject.userId
+    this.color = userObject.color
   }
 }
