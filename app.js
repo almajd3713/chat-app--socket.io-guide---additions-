@@ -49,7 +49,7 @@ let messagePOST = (message) => {
 let onlinePeople = []
 let messages = []
 let colorPicker = () => {
-  let colors = ["#C51D34", "#8A6642", "#3E5F8A", "#C93C20", "#00BB2D", "#EA899A", "#063971", "#C6A664", "#84C3BE", "#382C1E"]
+  let colors = ["#C51D34", "#8A6643", "#3E5F8A", "#C93C20", "#00BB2D", "#EA899A", "#063971", "#C6A664", "#84C3BE", "#382C1E"]
   return colors[Math.ceil(Math.random() * colors.length - 1)]
 }
 let welcomeMessageBuild = () => {
