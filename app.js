@@ -62,7 +62,7 @@ let io = new Server(server)
 let messages = []
 let onlinePeople = []
 let colorPicker = () => {
-  let colors = ["#C51D34", "#8A6643", "#3E5F8A", "#C93C20", "#00BB2D", "#EA899A", "#063971", "#C6A664", "#84C3BE", "#382C1E"]
+  let colors = ["#C51D34", "#8A6643", "#3E5F8A", "#C93C20", "#00BB2D", "#EA899A", "#063971", "#C6A664", "#84C3BE", "#382C1E", "#BCC682", , "#9FF33B", "#4285CE", "#94B2E3", "#5D2258", "#9CA9A9", "#FEEA7A", "#D9B8BD", "#6134D1", "#84F3B3", "#B83723", "#5E5FC3", "#433233"]
   return colors[Math.ceil(Math.random() * colors.length - 1)]
 }
 let welcomeMessageBuild = () => {
