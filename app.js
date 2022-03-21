@@ -153,10 +153,10 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("message", message)
   })
 
-  socket.on("kickPerson", (password, user => {
-    if(password === "galung2020") {
-      let desiredUser = onlinePeople.find(person => person.username === user)
-      if(desiredUser) socket.emit("discon")
-    }
-  }))
+  // socket.on("kickPerson", (password, user => {
+  //   if(password === "galung2020") {
+  //     let desiredUser = onlinePeople.find(person => person.username === user)
+  //     if(desiredUser) socket.emit("discon")
+  //   }
+  // }))
 })

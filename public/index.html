@@ -388,7 +388,7 @@
     socket.on("fi", (data) => {
       pushNotification(`${data.username} has left us, how sedj /:`, "fi")
     });
-    socket.on("discon", () => socket.emit("disconnect"))
+    // socket.on("discon", () => socket.emit("disconnect"))
     let adminPurge = (password) => {socket.emit("purgeAdmin", password)}
     socket.on("purgeStatus", (status) => {
       if(status) location.reload()
