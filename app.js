@@ -81,6 +81,14 @@ let welcomeMessageBuild = () => {
   }
   return str
 }
+let idGen = () => {
+  let str = "1234567890qwertyuiopasdfghjklzxcvbnm"
+  let id = ""
+  for(let i = 0; i <= 12 - 1; i ++) {
+    id = id + str[Math.ceil(Math.random() * 36)]
+  }
+  return id
+}
 
 io.on("connection", (socket) => {
   // messageGET(socket)
@@ -106,7 +114,7 @@ io.on("connection", (socket) => {
     }
   })
   socket.on("message", (data, user, replyMessage) => {
-    let message = new Message({content: data, user: user})
+    let message = new Message({content: data, user: user, id: idGen()})
     if(replyMessage) message.replyTo = replyMessage
     messages.push(message)
     // messagePOST(message)
@@ -119,7 +127,7 @@ io.on("connection", (socket) => {
   })
 
   socket.on("editSend", (val, message) => {
-    let desiredMessage = messages.find(mes => mes.content === message.content && mes.user.userId === message.user.userId)
+    let desiredMessage = messages.find(mes => mes.id === message.id)
     desiredMessage.content = val
     socket.broadcast.emit("editReceive", val, message)
   })
@@ -138,6 +146,7 @@ io.on("connection", (socket) => {
       isImage: true,
       image: buffer,
       user: user,
+      id: idGen()
     })
     messages.push(message)
     socket.emit("messageAdmin", message)

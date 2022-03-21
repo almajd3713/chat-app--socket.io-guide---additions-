@@ -210,7 +210,7 @@
           subNodes: [{
             tag: "div",
             className: "imageMessageHeader",
-            textContent: `<span style="color: ${!colorIsLight(message.user.color) ? "#eee" : "initial"}; margin-right: 0;">you sent a picture:</span>`
+            textContent: `<span style="color: ${!colorIsLight(message.user.color || "#000000") ? "#eee" : "initial"}; margin-right: 0;">you sent a picture:</span>`
           },{
             tag: "img",
             src: imgUrl
@@ -231,7 +231,7 @@
     });
     
     socket.on("editReceive", (val, message) => {
-      let desiredMessage = printedMessages.find(mes => mes.content === message.content && mes.user.userId === message.user.userId)
+      let desiredMessage = printedMessages.find(mes => mes.id === message.id)
       if(desiredMessage) {
         desiredMessage.content = val
         desiredMessage.messageStructure.textContent = `${desiredMessage.user.username}: ${val} (edited)`
@@ -246,7 +246,7 @@
       message.messageStructure = createNode({
         tag: "div",
         className: "message",
-        textContent: `<span class="messageHeader" style="background-color: ${message.user.color}; color: ${!colorIsLight(message.user.color) ? "#eee" : "initial"}">${message.user.username}</span> <span dir="auto">${message.content}</span>`,
+        textContent: `<span class="messageHeader" style="background-color: ${message.user.color}; color: ${!colorIsLight(message.user.color || "#000000") ? "#eee" : "initial"}">${message.user.username}</span> <span dir="auto">${message.content}</span>`,
       })
       if(currentUser) {
         message.messageStructure.appendChild(replyBtn)
@@ -258,11 +258,16 @@
         message.messageStructure.scrollIntoView()
       }
       if (message.replyTo) {
-        messagesDiv.insertBefore(createNode({
+        let replyDiv = createNode({
           tag: "div",
           className: "replyLabel",
           textContent: `replying to ${message.replyTo.user.username}: ${message.replyTo.content}`
-        }), message.messageStructure)
+        })
+        replyDiv.addEventListener("click", e => {
+          let desiredMessage = printedMessages.find(mes => mes.id === message.replyTo.id)
+          desiredMessage.messageStructure.scrollIntoView()
+        })
+        messagesDiv.insertBefore(replyDiv, message.messageStructure)
       }
       printedMessages.push(message)}
       else {

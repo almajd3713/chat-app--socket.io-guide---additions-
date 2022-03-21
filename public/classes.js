@@ -1,6 +1,7 @@
 
 export class Message {
   constructor(messageObject) {
+    this.id = messageObject.id
     this.content = messageObject.content
     this.user = messageObject.user
     this.messageStructure;
