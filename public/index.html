@@ -156,7 +156,12 @@
         } else if(replyFormSwitch) {
           socket.emit("message", input.value, currentUser, replyFormSwitch)
           input.value = ""
+          if(replyFormSwitch.isImage) {
           replyFormSwitch.messageStructure.style.backgroundColor = replyFormSwitch.user.color
+          } else {
+          replyFormSwitch.messageStructure.style.backgroundColor = "initial"
+
+          }
           replyFormSwitch = false
           replyMode = false
           input.placeholder = ``
