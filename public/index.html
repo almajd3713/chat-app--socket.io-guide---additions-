@@ -91,7 +91,7 @@
       text-align: center;
       background-color: gray;
       display: inline-block;
-      height: 100%;
+      height: 40px;
       width: 3rem;
       color: white;
       float: right;
@@ -156,7 +156,7 @@
         } else if(replyFormSwitch) {
           socket.emit("message", input.value, currentUser, replyFormSwitch)
           input.value = ""
-          replyFormSwitch.messageStructure.style.backgroundColor = "initial"
+          replyFormSwitch.messageStructure.style.backgroundColor = replyFormSwitch.user.color
           replyFormSwitch = false
           replyMode = false
           input.placeholder = ``
@@ -188,19 +188,22 @@
           message.messageStructure.scrollIntoView({block: "center"})
         }
         if (message.replyTo) {
+          let replyMessage = message.replyTo
           let replyDiv = createNode({
             tag: "div",
             className: "replyLabel",
-            textContent: `replying to ${message.replyTo.user.username}: ${message.replyTo.content}`
+            textContent: `replying to ${message.replyTo.user.username}: ${replyMessage.isImage ? "picture" : replyMessage.content}`
           })
           replyDiv.addEventListener("click", e => {
             let desiredMessage = printedMessages.find(mes => mes.id === message.replyTo.id)
             desiredMessage.messageStructure.classList.add("replyNoticeAnimation")
+            setTimeout(() => {
+              desiredMessage.messageStructure.classList.remove("replyNoticeAnimation")
+            }, 3100);
             desiredMessage.messageStructure.scrollIntoView({ block: "center" })
           })
           messagesDiv.insertBefore(replyDiv, message.messageStructure)
         }
-        printedMessages.push(message)
         editBtn.addEventListener("click", e => {
           message.messageStructure.textContent = ""
           message.messageStructure.prepend(createNode({
@@ -246,6 +249,7 @@
           message.messageStructure.scrollIntoView()
         }
       }
+      printedMessages.push(message)
     });
     
     socket.on("editReceive", (val, message) => {
@@ -256,7 +260,8 @@
       }
     })
     socket.on("message", (message) => {
-      if(!message.isImage) {let replyBtn = createNode({
+      if(!message.isImage) {
+      let replyBtn = createNode({
         tag: "div",
         textContent: "reply",
         className: "configBtn"
@@ -276,24 +281,28 @@
         message.messageStructure.scrollIntoView()
       }
       if (message.replyTo) {
+        let replyMessage = message.replyTo
         let replyDiv = createNode({
           tag: "div",
           className: "replyLabel",
-          textContent: `replying to ${message.replyTo.user.username}: ${message.replyTo.content}`
+          textContent: `replying to ${replyMessage.user.username}: ${replyMessage.isImage ? "picture" : messageReply.content}`
         })
         replyDiv.addEventListener("click", e => {
           let desiredMessage = printedMessages.find(mes => mes.id === message.replyTo.id)
           desiredMessage.messageStructure.classList.add("replyNoticeAnimation")
           desiredMessage.messageStructure.scrollIntoView()
+          setTimeout(() => {
+            desiredMessage.messageStructure.classList.remove("replyNoticeAnimation")
+          }, 3100);
         })
         messagesDiv.insertBefore(replyDiv, message.messageStructure)
       }
-      printedMessages.push(message)}
+    }
       else {
         let imgUrl = `data:image/png;base64,${bufferToBase64(message.image)}`
         message.messageStructure = createNode({
           tag: "div",
-          className: ["imageMessage"],
+          className: "imageMessage",
           subNodes: [{
             tag: "div",
             className: "imageMessageHeader",
@@ -314,7 +323,35 @@
         if (viewportCheckEl && isInViewport(viewportCheckEl)) {
           message.messageStructure.scrollIntoView()
         }
+        let replyBtn = createNode({
+          tag: "div",
+          textContent: "reply",
+          className: "configBtn"
+        })
+        if (currentUser) {
+          message.messageStructure.appendChild(replyBtn)
+          replyLogic(replyBtn, message)
+        }
+        // if (message.replyTo) {
+        //   let replyDiv = createNode({
+        //     tag: "div",
+        //     className: "replyLabel",
+        //     textContent: `replying to ${message.replyTo.user.username}: picture`
+        //   })
+        //   replyDiv.addEventListener("click", e => {
+        //     let desiredMessage = printedMessages.find(mes => mes.id === message.replyTo.id)
+        //     desiredMessage.messageStructure.classList.add("replyNoticeAnimation")
+        //     setTimeout(() => {
+        //       desiredMessage.messageStructure.classList.remove("replyNoticeAnimation")
+        //     }, 3100);
+        //     desiredMessage.messageStructure.scrollIntoView()
+        //   })
+        //   console.log(replyDiv)
+        //   console.log(message.messageStructure)
+        //   messagesDiv.appendChild(replyBtn)
+        // }
       }
+      printedMessages.push(message)
     })
 
     socket.on("initUser", (user) => {
