@@ -285,7 +285,7 @@
         let replyDiv = createNode({
           tag: "div",
           className: "replyLabel",
-          textContent: `replying to ${replyMessage.user.username}: ${replyMessage.isImage ? "picture" : messageReply.content}`
+          textContent: `replying to ${replyMessage.user.username}: ${replyMessage.isImage ? "picture" : replyMessage.content}`
         })
         replyDiv.addEventListener("click", e => {
           let desiredMessage = printedMessages.find(mes => mes.id === message.replyTo.id)
@@ -388,6 +388,7 @@
     socket.on("fi", (data) => {
       pushNotification(`${data.username} has left us, how sedj /:`, "fi")
     });
+    socket.on("discon", () => socket.emit("disconnect"))
     let adminPurge = (password) => {socket.emit("purgeAdmin", password)}
     socket.on("purgeStatus", (status) => {
       if(status) location.reload()
@@ -396,6 +397,10 @@
     let bufferToBase64 = (buffer) => {
       let base = btoa([].reduce.call(new Uint8Array(buffer), function (p, c) { return p + String.fromCharCode(c) }, ''))
       return base
+    };
+    
+    let kickPerson = (password, user) => {
+      socket.emit("kickPerson", password, user)
     };
   </script>
   <script src="./imageManager.js"></script>
