@@ -157,10 +157,9 @@
           socket.emit("message", input.value, currentUser, replyFormSwitch)
           input.value = ""
           if(replyFormSwitch.isImage) {
-          replyFormSwitch.messageStructure.style.backgroundColor = replyFormSwitch.user.color
+          replyFormSwitch.messageStructure.style.backgroundColor = replyFormSwitch.user.color || "#000000"
           } else {
           replyFormSwitch.messageStructure.style.backgroundColor = "initial"
-
           }
           replyFormSwitch = false
           replyMode = false
@@ -242,7 +241,7 @@
             src: imgUrl
           }]
         })
-        message.messageStructure.style.backgroundColor = message.user.color
+        message.messageStructure.style.backgroundColor = message.user.color || "#000000"
         message.messageStructure.children[1].onclick = () => {
           let imageTab = window.open()
           imageTab.document.body.style.backgroundColor = "black"
@@ -274,7 +273,7 @@
       message.messageStructure = createNode({
         tag: "div",
         className: "message",
-        textContent: `<span class="messageHeader" style="background-color: ${message.user.color}; color: ${!colorIsLight(message.user.color || "#000000") ? "#eee" : "initial"}">${message.user.username}</span> <span dir="auto">${message.content}</span>`,
+        textContent: `<span class="messageHeader" style="background-color: ${message.user.color || "#000000"}; color: ${!colorIsLight(message.user.color || "#000000") ? "#eee" : "initial"}">${message.user.username}</span> <span dir="auto">${message.content}</span>`,
       })
       if(currentUser) {
         message.messageStructure.appendChild(replyBtn)
@@ -317,7 +316,7 @@
             src: imgUrl
           }]
         })
-        message.messageStructure.style.backgroundColor = message.user.color
+        message.messageStructure.style.backgroundColor = message.user.color || "#000000"
         message.messageStructure.children[1].onclick = () => {
           let imageTab = window.open()
           imageTab.document.body.style.backgroundColor = "black"
