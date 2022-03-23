@@ -52,6 +52,7 @@ function isInViewport(element) {
   );
 }
 function colorIsLight(color) {
+  if (!/^#(?:[0-9a-fA-F]{3}){1,2}$/.test(color)) return true
   const hex = color.replace('#', '');
   const c_r = parseInt(hex.substr(0, 2), 16);
   const c_g = parseInt(hex.substr(2, 2), 16);
