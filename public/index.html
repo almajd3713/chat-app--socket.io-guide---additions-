@@ -73,9 +73,19 @@
       pointer-events: none;
       transition: all .3s;
     }
-    .imageMessage:hover > img{
-      width: 70%;
+    .imageZoomBtn {
+      width: 80%;
+      margin: auto;
+      height: 2rem;
+      background-color: black;
+      font-size: 1.5rem;
+      color: white;
+      text-align: center;
     }
+    .imageZoom {
+      width: 75% !important;
+    }
+
     .replyLabel {
       height: 1.5rem;
       width: 20rem;
@@ -319,14 +329,19 @@
           }, {
             tag: "img",
             src: imgUrl
+          }, {
+            tag: "div", 
+            className: ["imageZoomBtn"],
+            textContent: "click to zoom/unzoom image"
           }]
         })
         message.messageStructure.style.backgroundColor = message.user.color || "#000000"
-        message.messageStructure.children[1].onclick = () => {
-          let imageTab = window.open()
-          imageTab.document.body.style.backgroundColor = "black"
-          imageTab.document.body.innerHTML = `<img src="${imgUrl}" style="width: 80vwrem"/>`
-        }
+        message.messageStructure.querySelector(".imageZoomBtn").addEventListener("click", () => message.messageStructure.querySelector("img").classList.toggle("imageZoom"))
+        // message.messageStructure.children[1].onclick = () => {
+        //   let imageTab = window.open()
+        //   imageTab.document.body.style.backgroundColor = "black"
+        //   imageTab.document.body.innerHTML = `<img src="${imgUrl}" style="width: 80vwrem"/>`
+        // }
         messagesDiv.appendChild(message.messageStructure)
         let viewportCheckEl = Array.from(messagesDiv.children)[Array.from(messagesDiv.children).indexOf(message.messageStructure) - 2]
         if (viewportCheckEl && isInViewport(viewportCheckEl)) {
