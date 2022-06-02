@@ -9,7 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 // end of fix
 import fs from "fs"
 
-import {User, Message} from "./public/classes.js"
+import {User, Message} from "./public/scripts/classes.js"
 let express = require("express")
 let app = express()
 let port = process.env.PORT || 3000
@@ -105,6 +105,7 @@ io.on("connection", (socket) => {
     let onlinePeopleList = welcomeMessageBuild()
     onlinePeople.push(user)
     io.emit("hi", `${user.username} has joined !`, onlinePeopleList)
+    console.log(user)
     socket.emit("initUser", user)
   })
   socket.on("disconnect", () => {

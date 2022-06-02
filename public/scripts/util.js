@@ -1,5 +1,5 @@
 
-function createNode(props) {
+export function createNode(props) {
   let node = document.createElement(props.tag || "div")
   if (props.className) {
     if (Array.isArray(props.className)) props.className.forEach(classN => node.classList.add(classN))
@@ -23,8 +23,8 @@ function createNode(props) {
   if(props.onClick) node.onclick = onClick
   return node
 }
-let replyFormSwitch = false
-let replyLogic = (replyBtn, message) => {
+export let replyFormSwitch = false
+export let replyLogic = (replyBtn, message) => {
   let replyMode = false
   replyBtn.addEventListener("click", e => {
     if (!replyMode) {
@@ -42,7 +42,7 @@ let replyLogic = (replyBtn, message) => {
     }
   })
 };
-function isInViewport(element) {
+export function isInViewport(element) {
   const rect = element.getBoundingClientRect();
   return (
     rect.top >= 0 &&
@@ -51,7 +51,7 @@ function isInViewport(element) {
     rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   );
 }
-function colorIsLight(color) {
+export function colorIsLight(color) {
   if (!/^#(?:[0-9a-fA-F]{3}){1,2}$/.test(color)) return true
   const hex = color.replace('#', '');
   const c_r = parseInt(hex.substr(0, 2), 16);
