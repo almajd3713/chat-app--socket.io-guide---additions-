@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "outDir": "./dist/scripts",
+    "target": "ES6",
+    "moduleResolution": "Node"
+  },
+  "files": ["./src/scripts/index.ts"]
+}
