@@ -9,38 +9,43 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 // end of fix
 import fs from "fs"
 
-import {User, Message} from "./public/scripts/classes.js"
-let express = require("express")
+import {User, Message} from "./dist/scripts/classes.js"
+import express from "express"
 let app = express()
 let port = process.env.PORT || 3000
 
-let {Server} = require("socket.io")
+import {Server, Socket} from "socket.io"
 
-app.use(express.static(`${__dirname}/public`))
+app.use(express.static(`${__dirname}/dist`))
 app.use(bodyParser.raw({type: "image/*"}))
 app.use(express.json())
 
 
 app.get("/", (req, res) => {
-  res.sendFile()
+  res.sendFile("")
 })
-app.post("/", (req, res) => {
-  let oldData = JSON.parse(fs.readFileSync("./public/images/imageData.json"))
-  oldData.push(req.body)
-  fs.writeFileSync("./public/images/imageData.json", JSON.stringify(oldData))
-  res.sendStatus(200)
-})
+// app.post("/", (req, res) => {
+//   let oldData = JSON.parse(fs.readFileSync("./dist/images/imageData.json"))
+//   oldData.push(req.body)
+//   fs.writeFileSync("./dist/images/imageData.json", JSON.stringify(oldData))
+//   res.sendStatus(200)
+// })
 
 let server = app.listen(port, () => console.log("listening on *:3000"))
 let io = new Server(server)
+interface chatSocket extends Socket {
+  data: {
+    user?: User
+  }
+}
 
 // let messagePOST = (message) => {
-//   let database = JSON.parse(fs.readFileSync("./public/database.json"))
+//   let database = JSON.parse(fs.readFileSync("./dist/database.json"))
 //   database.push([message.user.userId, message.content])
-//   fs.writeFileSync("./public/database.json", JSON.stringify(database))
+//   fs.writeFileSync("./dist/database.json", JSON.stringify(database))
 // }
 // let messageGET = () => {
-//   let database = JSON.parse(fs.readFileSync("./public/database.json"))
+//   let database = JSON.parse(fs.readFileSync("./dist`/database.json"))
 //   let messages = database.map(data => {
 //     return new Message({
 //       content: data[1],
@@ -59,27 +64,25 @@ let io = new Server(server)
 //   })
 // }
 
-let messages = []
-let onlinePeople = []
+
+
+
+let messages: Message[] = []
+interface onlinePeopleInterface {
+  arr: User[]
+
+}
+let onlinePeople = (() => {
+  let list: User[]
+  let add = (user: User) => list.push(user)
+  let remove = (user: User) => list = list.filter(u => u.userId === user.userId)
+  let find = (user: User) => list.find(u => u.userId === user.userId)
+  return {list, find, add, remove}
+})()
+
 let colorPicker = () => {
   let colors = ["#C51D34", "#8A6643", "#3E5F8A", "#C93C20", "#00BB2D", "#EA899A", "#063971", "#C6A664", "#84C3BE", "#382C1E", "#BCC682", , "#9FF33B", "#4285CE", "#94B2E3", "#5D2258", "#9CA9A9", "#FEEA7A", "#D9B8BD", "#6134D1", "#84F3B3", "#B83723", "#5E5FC3", "#433233"]
   return colors[Math.ceil(Math.random() * colors.length - 1)]
-}
-let welcomeMessageBuild = () => {
-  let str = `Welcome ! there ${onlinePeople.length >= 2 ? "are" : "is"} ${onlinePeople.length} people online. ` 
-  if(onlinePeople.length) {
-    onlinePeople.forEach((person, i, arr) => {
-    let tempStr = `"${person.username}"`
-    if(arr[i + 1]) {
-      tempStr = `${tempStr}, `
-      if(!arr[i + 2]) tempStr = `${tempStr} and `
-    } else {
-      tempStr = `${tempStr}.`
-    }
-    str = str + tempStr
-  })
-  }
-  return str
 }
 let idGen = () => {
   let str = "1234567890qwertyuiopasdfghjklzxcvbnm"
@@ -90,42 +93,37 @@ let idGen = () => {
   return id
 }
 
-io.on("connection", (socket) => {
-  // messageGET(socket)
+io.on("connection", (socket: chatSocket) => {
   messages.forEach(message => {
     socket.emit("message", message)
   })
-  socket.on("messageFirst", (data) => {
+  socket.on("messageFirst", (username: string) => {
     let user = new User({
-      username: data,
+      username: username,
       userId: socket.id,
       color: colorPicker()
     })
-    socket.user = user
-    let onlinePeopleList = welcomeMessageBuild()
-    onlinePeople.push(user)
-    io.emit("hi", `${user.username} has joined !`, onlinePeopleList)
-    console.log(user)
+    socket.data.user = user
+    onlinePeople.add(user)
     socket.emit("initUser", user)
+    io.emit("hi", `${user.username} has joined !`, onlinePeople)
   })
   socket.on("disconnect", () => {
-    if(socket.user) {
-      io.emit("fi", socket.user)
-      onlinePeople = onlinePeople.filter(user => user.userId !== socket.user.userId)
+    if(socket.data.user) {
+      io.emit("fi", socket.data.user)
+      onlinePeople.remove(socket.data.user)
     }
   })
-  socket.on("message", (data, user, replyMessage) => {
+  socket.on("message", (data: string, user: User, replyMessage) => {
     let message = new Message({content: data, user: user, id: idGen()})
-    if(replyMessage) message.replyTo = replyMessage
+    // if(replyMessage) message.replyTo = replyMessage
     messages.push(message)
-    // messagePOST(message)
-    socket.emit("messageAdmin", message)
-    socket.broadcast.emit("message", message)
+    io.emit("message", message)
   })
   
-  socket.on("typing", () => {
-    socket.broadcast.emit("typing", socket.username)
-  })
+  // socket.on("typing", () => {
+  //   socket.broadcast.emit("typing", socket.data.user)
+  // })
 
   socket.on("editSend", (val, message) => {
     let desiredMessage = messages.find(mes => mes.id === message.id)
