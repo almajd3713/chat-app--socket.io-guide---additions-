@@ -1,5 +1,4 @@
 import { messageConstructor } from "./constructor";
-import io from "socket.io-client";
 let socket = io();
 let form = document.getElementById('form');
 let input = document.getElementById('input');

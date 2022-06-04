@@ -2,11 +2,15 @@
   "compilerOptions": {
     "strict": true,
     "noImplicitAny": true,
+    "outDir": "../dist/scripts",
     "target": "ES6",
     "moduleResolution": "Node",
-    "outDir": "./"
+    "composite": true
   },
-  "references": [
-    {"path": "./src"}
+  "include": [
+    "./scripts"
   ],
+  "exclude": [
+    "scripts/old"
+  ]
 }

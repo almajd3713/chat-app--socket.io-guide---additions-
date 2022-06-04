@@ -3,10 +3,9 @@ interface MessageStructure {
   id: string
   content:string
   user: User
-  messageStructure:HTMLElement
-  isImage: boolean
-  image: string
-  replyTo: boolean | Message
+  messageStructure: HTMLElement | boolean
+  isImage: boolean | string
+  isReply: boolean | Message
 }
 interface UserStructure {
   username: string
@@ -17,18 +16,15 @@ export class Message implements MessageStructure{
   id: string
   content: string
   user: User
-  messageStructure: HTMLElement
-  isImage: boolean
-  image: string
-  replyTo: boolean
+  messageStructure: boolean | HTMLElement = false
+  isImage: boolean | string
+  isReply: boolean | Message
   constructor(messageObject: MessageStructure) {
     this.id = messageObject.id
     this.content = messageObject.content
     this.user = messageObject.user
-    this.messageStructure;
     this.isImage = messageObject.isImage;
-    this.image = messageObject.image
-    this.replyTo = false;
+    this.isReply = false;
   }
   auth(user: User["userId"]) {
     if(user === this.user.userId) return true
@@ -37,7 +33,7 @@ export class Message implements MessageStructure{
 }
 
 export class User implements UserStructure{
-  constructor(userObject) {
+  constructor(userObject: UserStructure) {
     this.username = userObject.username
     this.userId = userObject.userId
     this.color = userObject.color

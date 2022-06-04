@@ -7,9 +7,7 @@ import {fileURLToPath} from "url"
 import {fileTypeFromBuffer} from "file-type"
 const __dirname = dirname(fileURLToPath(import.meta.url))
 // end of fix
-import fs from "fs"
 
-import {User, Message} from "./dist/scripts/classes.js"
 import express from "express"
 let app = express()
 let port = process.env.PORT || 3000
@@ -33,11 +31,7 @@ app.get("/", (req, res) => {
 
 let server = app.listen(port, () => console.log("listening on *:3000"))
 let io = new Server(server)
-interface chatSocket extends Socket {
-  data: {
-    user?: User
-  }
-}
+
 
 // let messagePOST = (message) => {
 //   let database = JSON.parse(fs.readFileSync("./dist/database.json"))
@@ -66,22 +60,18 @@ interface chatSocket extends Socket {
 
 
 
-
-let messages: Message[] = []
-interface onlinePeopleInterface {
-  arr: User[]
-
-}
 let onlinePeople = (() => {
-  let list: User[]
-  let add = (user: User) => list.push(user)
-  let remove = (user: User) => list = list.filter(u => u.userId === user.userId)
-  let find = (user: User) => list.find(u => u.userId === user.userId)
+  let list = []
+  let add = (user) => list.push(user)
+  let remove = (user) => list = list.filter(u => u.userId === user.userId)
+  let find = (user) => list.find(u => u.userId === user.userId)
   return {list, find, add, remove}
 })()
 
 let colorPicker = () => {
-  let colors = ["#C51D34", "#8A6643", "#3E5F8A", "#C93C20", "#00BB2D", "#EA899A", "#063971", "#C6A664", "#84C3BE", "#382C1E", "#BCC682", , "#9FF33B", "#4285CE", "#94B2E3", "#5D2258", "#9CA9A9", "#FEEA7A", "#D9B8BD", "#6134D1", "#84F3B3", "#B83723", "#5E5FC3", "#433233"]
+  let colors = [
+    "#C51D34", "#8A6643", "#3E5F8A", "#C93C20", "#00BB2D", "#EA899A", "#063971", "#C6A664", "#84C3BE", "#382C1E", "#BCC682", "#9FF33B", "#4285CE", "#94B2E3", "#5D2258", "#9CA9A9", "#FEEA7A", "#D9B8BD", "#6134D1", "#84F3B3", "#B83723", "#5E5FC3", "#433233"
+  ]
   return colors[Math.ceil(Math.random() * colors.length - 1)]
 }
 let idGen = () => {
@@ -93,11 +83,11 @@ let idGen = () => {
   return id
 }
 
-io.on("connection", (socket: chatSocket) => {
+io.on("connection", (socket) => {
   messages.forEach(message => {
     socket.emit("message", message)
   })
-  socket.on("messageFirst", (username: string) => {
+  socket.on("messageFirst", (username) => {
     let user = new User({
       username: username,
       userId: socket.id,
@@ -114,8 +104,8 @@ io.on("connection", (socket: chatSocket) => {
       onlinePeople.remove(socket.data.user)
     }
   })
-  socket.on("message", (data: string, user: User, replyMessage) => {
-    let message = new Message({content: data, user: user, id: idGen()})
+  socket.on("message", (data, user, replyMessage) => {
+    let message = new Message({content: data, user: user, id: idGen(), messageStructure: false})
     // if(replyMessage) message.replyTo = replyMessage
     messages.push(message)
     io.emit("message", message)
@@ -125,32 +115,32 @@ io.on("connection", (socket: chatSocket) => {
   //   socket.broadcast.emit("typing", socket.data.user)
   // })
 
-  socket.on("editSend", (val, message) => {
-    let desiredMessage = messages.find(mes => mes.id === message.id)
-    desiredMessage.content = val
-    socket.broadcast.emit("editReceive", val, message)
-  })
+  // socket.on("editSend", (val, message) => {
+  //   let desiredMessage = messages.find(mes => mes.id === message.id)
+  //   desiredMessage.content = val
+  //   socket.broadcast.emit("editReceive", val, message)
+  // })
 
-  socket.on("purgeAdmin", password => {
-    if(password === "galung2020") {
-      messages = []
-      io.emit("purgeStatus", true)
-    } else {
-      socket.emit("purgeStatus", false)
-    }
-  })
+  // socket.on("purgeAdmin", password => {
+  //   if(password === "galung2020") {
+  //     messages = []
+  //     io.emit("purgeStatus", true)
+  //   } else {
+  //     socket.emit("purgeStatus", false)
+  //   }
+  // })
 
-  socket.on("imageSend", (buffer, user) => {
-    let message = new Message({
-      isImage: true,
-      image: buffer,
-      user: user,
-      id: idGen()
-    })
-    messages.push(message)
-    socket.emit("messageAdmin", message)
-    socket.broadcast.emit("message", message)
-  })
+  // socket.on("imageSend", (buffer, user) => {
+  //   let message = new Message({
+  //     isImage: true,
+  //     image: buffer,
+  //     user: user,
+  //     id: idGen()
+  //   })
+  //   messages.push(message)
+  //   socket.emit("messageAdmin", message)
+  //   socket.broadcast.emit("message", message)
+  // })
 
   // socket.on("kickPerson", (password, user => {
   //   if(password === "galung2020") {
