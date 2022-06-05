@@ -44,7 +44,7 @@ export let messageConstructor = (message, user, direction) => {
     }
     //! edit button
     console.log(user);
-    if (message.isNotif || (user && message.user.userId !== user.userId))
+    if (message.isNotif || (user && message.user.userId !== user.userId) || !user)
         editBtn.remove();
     else {
         editBtn.addEventListener("click", () => {

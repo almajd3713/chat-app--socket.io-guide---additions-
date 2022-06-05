@@ -55,7 +55,7 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
 
   //! edit button
   console.log(user)
-  if (message.isNotif || (user && message.user.userId !== user.userId)) editBtn.remove()
+  if (message.isNotif || (user && message.user.userId !== user.userId) || !user) editBtn.remove()
   else {
     editBtn.addEventListener("click", () => {
     form.style.display = "block";
