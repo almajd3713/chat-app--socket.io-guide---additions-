@@ -2,19 +2,29 @@ import { Message, User } from "./classes.js";
 import { colorIsLight, createNode, isInViewport } from "./util.js";
 let parent = document.querySelector(".messages")!
 export type messageDir = "self" | "other" | "notif"
-import { socket } from "./index.js";
+import { messages, socket } from "./index.js";
 
 export type messageType = "message" | "notif"
-type modules = "message" | "edit" | "reply" | "image" | "notif"
+// type modules = "message" | "edit" | "reply" | "image" | "notif"
+let isAdmin = false
 
+setTimeout(() => {
+  socket.on("adminLogin", () => {
+    isAdmin = true
+    messages.forEach(message => {
+      if (!message.isNotif) {
+        ((message.messageStructure as HTMLElement).querySelector(".deleteBtn") as HTMLElement).style.display = "inline-block"
+      }
+    })
+  })
+}, 100);
 
-
-let scrollCheck = (el:HTMLElement) => {
-  let viewportCheckEl = Array.from(parent.children)[Array.from(parent.children).indexOf(el) - 3] as HTMLElement
-  if (viewportCheckEl && isInViewport(viewportCheckEl)) {
-    el.scrollIntoView({ block: "center" })
-  }
-}
+// let scrollCheck = (el:HTMLElement) => {
+//   let viewportCheckEl = Array.from(parent.children)[Array.from(parent.children).indexOf(el) - 3] as HTMLElement
+//   if (viewportCheckEl && isInViewport(viewportCheckEl)) {
+//     el.scrollIntoView({ block: "center" })
+//   }
+// }
 
 export let messageConstructor = (message: Message, user: User, direction?: messageDir) => {
   let find = (q:string) => (base.querySelector(q) as HTMLElement)!
@@ -33,12 +43,20 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
       }, {
         textContent: "edit",
         className: "configBtn"
+      }, {
+        textContent: "delete",
+        className: "deleteBtn"
+      }, {
+        textContent: "reply",
+        className: "replyBtn"
       }
     ]
   })
   let form = find("form")
   let text = find(".messageText")
   let editBtn = find(".configBtn")
+  let deleteBtn = find(".deleteBtn")
+  let replyBtn = find(".replyBtn")
   let input = find("input") as HTMLInputElement
   form.style.display = "none"
   
@@ -54,9 +72,19 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
       break
   }
 
+  //! reply button
+  if (message.user.userId === "AAAAAAAAAAAA") {
+    replyBtn.remove()
+  }
+
+  //! check if user is owner of message
+  if (message.isNotif || (user && message.user.userId !== user.userId) || !user) {
+    editBtn.remove()
+    if(!isAdmin || message.isNotif) {
+      deleteBtn.style.display = "none"
+    }
+  }
   //! edit button
-  console.log(user)
-  if (message.isNotif || (user && message.user.userId !== user.userId) || !user) editBtn.remove()
   else {
     editBtn.addEventListener("click", () => {
     form.style.display = "block";
@@ -74,6 +102,14 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
     })
   }
 
+  //! delete button
+  deleteBtn.addEventListener("click", () => {
+    deleteBtn.textContent = "Sure to delete ?"
+    deleteBtn.addEventListener("click", () => {
+      socket.emit("delete", message)
+    })
+  })
+
   //! notification
   if(message.isNotif && message.isNotif[0]) {
     switch (message.isNotif[1]) {
@@ -82,6 +118,9 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
         break;
       case "fi":
         base.style.backgroundColor = "#ef523e"
+        break;
+      case "promotion":
+        base.style.backgroundColor = "#f5cc51"
     }
   }
   message.messageStructure = base
@@ -98,16 +137,3 @@ let nameLabel = (user: User, isSelf: boolean = false) => {
     textContent: isSelf ? "you" : user.username
   })
 }
-
-// let replyModeWatcher = (/* base: HTMLElement,  */find: (q:string) => HTMLElement) => {
-//   return new Proxy({val: false}, {
-//     set: (target, key, value: boolean) => {
-//       target["val"] = !target["val"]
-//       if(target["val"]) {
-//         find("input").style.display = ""
-//         find("input").focus()
-//       }
-//       return true
-//     }
-//   })
-// }

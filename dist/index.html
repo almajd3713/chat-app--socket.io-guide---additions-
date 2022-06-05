@@ -15,6 +15,11 @@
   </form>
 
   <script src="./scripts/index.js" type="module"></script>
+  <script>
+    let adminLogin = (code) => {
+      socket.emit("adminLogin", code)
+    };
+  </script>
 </body>
 
 </html>

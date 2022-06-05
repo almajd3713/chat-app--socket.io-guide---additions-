@@ -1,133 +1,136 @@
-    body {
-      margin: 0;
-      padding-bottom: 3rem;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+body {
+  margin: 0;
+  padding-bottom: 3rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
 
-    #form {
-      background: rgba(0, 0, 0, 0.15);
-      padding: 0.25rem;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      height: 3rem;
-      box-sizing: border-box;
-      backdrop-filter: blur(10px);
-    }
+#form {
+  background: rgba(0, 0, 0, 0.15);
+  padding: 0.25rem;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  height: 3rem;
+  box-sizing: border-box;
+  backdrop-filter: blur(10px);
+}
 
-    #input {
-      border: none;
-      padding: 0 1rem;
-      flex-grow: 1;
-      border-radius: 2rem;
-      margin: 0.25rem;
-    }
+#input {
+  border: none;
+  padding: 0 1rem;
+  flex-grow: 1;
+  border-radius: 2rem;
+  margin: 0.25rem;
+}
 
-    #input:focus {
-      outline: none;
-    }
+#input:focus {
+  outline: none;
+}
 
-    #form>button {
-      background: #333;
-      border: none;
-      padding: 0 1rem;
-      margin: 0.25rem;
-      border-radius: 3px;
-      outline: none;
-      color: #fff;
-    }
+#form>button {
+  background: #333;
+  border: none;
+  padding: 0 1rem;
+  margin: 0.25rem;
+  border-radius: 3px;
+  outline: none;
+  color: #fff;
+}
 
-    .messages {
-      margin: 0;
-      padding: 0;
-    }
-    .messages input {
-      width: 17.5rem
-    }
+.messages {
+  margin: 0;
+  padding: 0;
+}
+.messages input {
+  width: 17.5rem
+}
 
-    .messages > .message {
-      height: 2.5rem;
-      line-height: 2.5rem;
-      padding: 0 2rem;
-      border-bottom: 1px solid #878787;
-      /* min-width: 5rem; */
-    }
+.messages > .message {
+  height: 2.5rem;
+  line-height: 2.5rem;
+  padding: 0 2rem;
+  border-bottom: 1px solid #878787;
+  /* min-width: 5rem; */
+}
 
-    .messages > .message:nth-child(odd) {
-      background: #efefef;
-    }
-    .imageMessage {
-      margin: 0 1rem;
-      padding: 0 1rem;
-      padding-bottom: 1rem;
-    }
-    .imageMessage img{
-      width: 35%;
-      pointer-events: none;
-      transition: all .3s;
-    }
-    .imageZoomBtn {
-      width: 80%;
-      margin: auto;
-      height: 2rem;
-      background-color: black;
-      font-size: 1.5rem;
-      color: white;
-      text-align: center;
-    }
-    .imageZoom {
-      width: 75% !important;
-    }
+.imageMessage {
+  margin: 0 1rem;
+  padding: 0 1rem;
+  padding-bottom: 1rem;
+}
+.imageMessage img{
+  width: 35%;
+  pointer-events: none;
+  transition: all .3s;
+}
+.imageZoomBtn {
+  width: 80%;
+  margin: auto;
+  height: 2rem;
+  background-color: black;
+  font-size: 1.5rem;
+  color: white;
+  text-align: center;
+}
+.imageZoom {
+  width: 75% !important;
+}
 
-    .replyLabel {
-      height: 1.5rem;
-      width: 20rem;
-      padding-left: 1rem;
-      font-size: .75rem;
-      line-height: 1.5rem;
-      background-color: rgb(180, 80, 80);
-      color: rgb(228, 228, 228);
-    }
-    .typing:not(:empty) {
-      position: fixed;
-      bottom: 5%;
-      padding: .5rem 2rem;
-      color: gray;
-      background-color: white;
-    }
-    .configBtn {
-      text-align: center;
-      background-color: gray;
-      display: inline-block;
-      height: 40px;
-      width: 3rem;
-      color: white;
-      float: right;
-      margin-left: 2rem
-    }
-    .messageHeader {
-      display: inline-block;
-      height: 100%;
-      text-align: center;
-      padding:0 2rem;
-      margin-right: 1rem;
-    }
-    .imageMessageHeader {
-      padding: .5rem 1rem;
-    }
+.replyLabel {
+  height: 1.5rem;
+  width: 20rem;
+  padding-left: 1rem;
+  font-size: .75rem;
+  line-height: 1.5rem;
+  background-color: rgb(180, 80, 80);
+  color: rgb(228, 228, 228);
+}
+.typing:not(:empty) {
+  position: fixed;
+  bottom: 5%;
+  padding: .5rem 2rem;
+  color: gray;
+  background-color: white;
+}
+[class$="Btn"] {
+  text-align: center;
+  background-color: gray;
+  display: inline-block;
+  height: 40px;
+  padding: 0 .5rem;
+  color: white;
+  float: right;
+  margin-left: 2px;
+}
+.deleteBtn {
+  background-color: #333;
+}
+.replyBtn {
+  background-color: lightcoral;
+}
+.messageHeader {
+  display: inline-block;
+  height: 100%;
+  text-align: center;
+  padding:0 2rem;
+  margin-right: 1rem;
+}
+.imageMessageHeader {
+  padding: .5rem 1rem;
+}
 
-    .replyNoticeAnimation {
-      animation: replyFade 3s ease-in-out;
-    }
-    @keyframes replyFade {
-      0% {
-        background-color: #2ebd48;
-      }
-      100% {
-        background-color: initial;
-      }
-    }
+.replyNoticeAnimation {
+  animation: replyFade 3s ease-in-out;
+}
+@keyframes replyFade {
+  0% {
+    background-color: #2ebd48;
+  }
+  100% {
+    background-color: initial;
+  }
+}
 
-    .util-messageSender {text-align: right; padding-right: 1rem;}
+.util-messageSender {text-align: right; padding-right: 1rem;}

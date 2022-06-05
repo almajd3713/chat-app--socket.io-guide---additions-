@@ -91,7 +91,7 @@ let idGen = () => {
 
 io.on("connection", (socket) => {
   messages.forEach(message => {
-    socket.emit("loadOldMessage", message)
+    socket.emit("message", message, "other")
   })
   socket.on("messageFirst", (username) => {
     let user = new User({
@@ -134,6 +134,11 @@ io.on("connection", (socket) => {
     io.emit("edit", desiredMessage)
   })
 
+  socket.on("delete", message => {
+    messages = messages.filter(mes => mes.id !== message.id)
+    io.emit("delete", message)
+  })
+
   // socket.on("purgeAdmin", password => {
   //   if(password === "galung2020") {
   //     messages = []
@@ -161,6 +166,23 @@ io.on("connection", (socket) => {
   //     if(desiredUser) socket.emit("discon")
   //   }
   // }))
+  socket.on("adminLogin", code => {
+    let isAdmin = false
+    let secret = ["g41ung4"]
+    secret.forEach(pw => {
+      if(pw === code) isAdmin = true
+    })
+    if(isAdmin) {
+      socket.emit("adminLogin")
+      socket.emit("message", new Message({
+        content: "You are now promoted to an admin !",
+        user: onlinePeople.find("AAAAAAAAAAAA"),
+        isNotif: [true, "promotion"],
+        id: idGen()
+      }), "other")
+    }
+  })
+
   socket.on("disconnect", () => {
     if(socket.data.user) {
       let message = new Message({
