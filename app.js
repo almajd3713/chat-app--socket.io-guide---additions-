@@ -30,9 +30,7 @@ app.get("/", (req, res) => {
 // })
 
 let server = app.listen(port, () => console.log("listening on *:3000"))
-let io = new Server(server, {
-  wsEngine: require("eiows").Server
-})
+let io = new Server(server)
 
 
 // let messagePOST = (message) => {
