@@ -36,7 +36,8 @@ export let messageConstructor = (message, user, direction) => {
     //! self/other switch
     switch (direction) {
         case "self":
-            base.classList.add("util-messageSender");
+            base.prepend(nameLabel(message.user, true));
+            base.style.backgroundColor = "#b4f3da";
             break;
         case "other":
             base.prepend(nameLabel(message.user));
@@ -74,7 +75,7 @@ export let messageConstructor = (message, user, direction) => {
     }
     message.messageStructure = base;
 };
-let nameLabel = (user) => {
+let nameLabel = (user, isSelf = false) => {
     return createNode({
         tag: "span",
         className: "messageHeader",
@@ -82,7 +83,7 @@ let nameLabel = (user) => {
             backgroundColor: user.color,
             color: !colorIsLight(user.color) ? "#eee" : "black"
         },
-        textContent: user.username
+        textContent: isSelf ? "you" : user.username
     });
 };
 // let replyModeWatcher = (/* base: HTMLElement,  */find: (q:string) => HTMLElement) => {

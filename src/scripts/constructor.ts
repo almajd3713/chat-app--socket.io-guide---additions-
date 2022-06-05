@@ -46,7 +46,8 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
   //! self/other switch
   switch (direction) {
     case "self":
-      base.classList.add("util-messageSender")
+      base.prepend(nameLabel(message.user, true))
+      base.style.backgroundColor = "#b4f3da"
       break;
     case "other":
       base.prepend(nameLabel(message.user))
@@ -86,7 +87,7 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
   message.messageStructure = base
 }
 
-let nameLabel = (user: User) => {
+let nameLabel = (user: User, isSelf: boolean = false) => {
   return createNode({
     tag: "span",
     className: "messageHeader",
@@ -94,7 +95,7 @@ let nameLabel = (user: User) => {
       backgroundColor: user.color,
       color: !colorIsLight(user.color) ? "#eee" : "black"
     },
-    textContent: user.username
+    textContent: isSelf ? "you" : user.username
   })
 }
 
