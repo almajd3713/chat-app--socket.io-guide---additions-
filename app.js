@@ -12,7 +12,7 @@ import express from "express"
 let app = express()
 let port = process.env.PORT || 3000
 
-import {Server, Socket} from "socket.io"
+import {Server} from "socket.io"
 
 app.use(express.static(`${__dirname}/dist`))
 app.use(bodyParser.raw({type: "image/*"}))
@@ -30,7 +30,9 @@ app.get("/", (req, res) => {
 // })
 
 let server = app.listen(port, () => console.log("listening on *:3000"))
-let io = new Server(server)
+let io = new Server(server, {
+  wsEngine: require("eiows").Server
+})
 
 
 // let messagePOST = (message) => {
