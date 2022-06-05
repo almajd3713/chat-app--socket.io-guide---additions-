@@ -1,8 +1,10 @@
 export class Message {
     constructor(messageObject) {
+        this.content = "";
         this.messageStructure = false;
         this.isReply = false;
         this.isNotif = [false, ""];
+        this.isEdited = false;
         this.id = messageObject.id;
         this.content = messageObject.content;
         this.user = messageObject.user;

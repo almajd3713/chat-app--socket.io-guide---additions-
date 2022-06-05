@@ -1,29 +1,68 @@
 import { colorIsLight, createNode, isInViewport } from "./util.js";
 let parent = document.querySelector(".messages");
+import { socket } from "./index.js";
 let scrollCheck = (el) => {
     let viewportCheckEl = Array.from(parent.children)[Array.from(parent.children).indexOf(el) - 3];
     if (viewportCheckEl && isInViewport(viewportCheckEl)) {
         el.scrollIntoView({ block: "center" });
     }
 };
-export let messageConstructor = (message, direction) => {
-    let editBtn;
+export let messageConstructor = (message, user, direction) => {
     let find = (q) => base.querySelector(q);
     let base = createNode({
         className: ["message"],
-        attributes: [["dir", "auto"]]
+        subNodes: [
+            {
+                tag: "span",
+                className: "messageText"
+            },
+            {
+                tag: "form",
+                subNodes: [{
+                        tag: "input"
+                    }]
+            }, {
+                textContent: "edit",
+                className: "configBtn"
+            }
+        ]
     });
-    console.log(base);
+    let form = find("form");
+    let text = find(".messageText");
+    let editBtn = find(".configBtn");
+    let input = find("input");
+    form.style.display = "none";
+    text.textContent = `${message.content} ${message.isEdited ? "(edited)" : ""}`;
+    //! self/other switch
     switch (direction) {
         case "self":
             base.classList.add("util-messageSender");
-            base.textContent = message.content;
             break;
         case "other":
-            base.textContent = message.content;
             base.prepend(nameLabel(message.user));
             break;
     }
+    //! edit button
+    console.log(user);
+    if (message.isNotif || (user && message.user.userId !== user.userId))
+        editBtn.remove();
+    else {
+        editBtn.addEventListener("click", () => {
+            form.style.display = "block";
+            text.style.display = "none";
+            editBtn.style.display = "none";
+            input.value = message.content;
+            input.focus();
+        });
+        form.addEventListener("submit", e => {
+            e.preventDefault();
+            form.style.display = "none";
+            text.style.display = "initial";
+            editBtn.style.display = "block";
+            socket.emit("edit", message.id, input.value);
+        });
+    }
+    //! notification
     if (message.isNotif && message.isNotif[0]) {
         switch (message.isNotif[1]) {
             case "hi":
@@ -33,35 +72,8 @@ export let messageConstructor = (message, direction) => {
                 base.style.backgroundColor = "#ef523e";
         }
     }
-    // let addModule = (module: modules) => {
-    //   switch (module) {s
-    //     case "edit":
-    //       editBtn = createNode({
-    //         textContent: "edit",
-    //         className: "configBtn"
-    //       }) as HTMLDivElesment
-    //       base.appendChild(editBtn)
-    //       break
-    //   }
-    // }
-    return base;
+    message.messageStructure = base;
 };
-// export let oldMessageConstructor = (message: Message) => {
-//   console.log(message)
-//   let base = createNode({
-//     className: ["message"],
-//     attributes: [["dir", "auto"]]
-//   })
-//   base.textContent = message.content
-//   if(message.isNotif) {
-//     console.log("Aye")
-//     base.prepend(nameLabel(message.user))
-//     if (message.user.userId === "AAAAAAAAAAAA") {
-//       base.style.backgroundColor = "yellow"
-//     }
-//   }
-//   return base
-// }
 let nameLabel = (user) => {
     return createNode({
         tag: "span",
@@ -73,3 +85,15 @@ let nameLabel = (user) => {
         textContent: user.username
     });
 };
+// let replyModeWatcher = (/* base: HTMLElement,  */find: (q:string) => HTMLElement) => {
+//   return new Proxy({val: false}, {
+//     set: (target, key, value: boolean) => {
+//       target["val"] = !target["val"]
+//       if(target["val"]) {
+//         find("input").style.display = ""
+//         find("input").focus()
+//       }
+//       return true
+//     }
+//   })
+// }
