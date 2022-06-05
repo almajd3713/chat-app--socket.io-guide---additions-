@@ -1,33 +1,38 @@
-import * as util from "./util"
-import {Message, User} from "./classes"
-import {messageConstructor} from "./constructor"
-import io from "../../node_modules/socket.io-client"
+import * as util from "./util.js"
+import {Message, User} from "./classes.js"
+import { messageConstructor, messageDir } from "./constructor.js"
+import type { Socket } from "socket.io";
 
-let socket = io()
+// @ts-ignore
+// ignored because io() is imported with the html file, not here
+let socket: Socket = io()
 let form = document.getElementById('form') as HTMLFormElement;
 let input = document.getElementById('input') as HTMLInputElement;
 let messagesDiv = document.querySelector('.messages')!;
 let currentUser: User
 let messages: Message[]
-console.log("aye")
+let replySwitch: boolean = false
 
 form.addEventListener("submit", e => {
   e.preventDefault()
   socket.emit(
-    currentUser ? "message" : "messageFirst",
+    !currentUser ? "messageFirst" : "message",
     input.value,
     currentUser
   )
-})
-
-socket.on("initUser", (user: User) => {
-  currentUser = user
   refreshFields()
 })
 
-socket.on("message", (message: Message) => {
-  let msg = messageConstructor(message, "self")
-  messagesDiv.appendChild(msg.base)
+socket.on("loadOldMessage", message => {
+  messagesDiv.appendChild(messageConstructor(message, "other"))
+})
+socket.on("initUser", (user: User) => {
+  currentUser = user
+})
+
+socket.on("message", (message: Message, type: messageDir) => {
+  message.messageStructure = messageConstructor(message, type)
+  messagesDiv.appendChild(message.messageStructure)
 })
 
 

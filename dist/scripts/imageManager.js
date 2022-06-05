@@ -17,15 +17,3 @@ export default (e, currentUser, notification, socket) => __awaiter(void 0, void 
         socket.emit("imageSend", img, currentUser);
     }
 });
-// let requestImage = async(image, currentUser) => {
-//   let img = await image.arrayBuffer()
-//   // console.log(img)
-//   // let url = await fetch(`/`, {
-//   //   method: "POST",
-//   //   body: img,
-//   //   headers: {
-//   //     "Content-Type": "image/png"
-//   //   }
-//   // })
-//   socket.emit("imageSend", img, currentUser)
-// }

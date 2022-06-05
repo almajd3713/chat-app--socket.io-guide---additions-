@@ -4,9 +4,8 @@
     "noImplicitAny": true,
     "target": "ES6",
     "moduleResolution": "Node",
-    "outDir": "./"
+    "outDir": "./dist/scripts"
   },
-  "references": [
-    {"path": "./src"}
-  ],
+  "include": ["./src/scripts/**.ts"],
+  "exclude": ["./src/scripts/old"]
 }

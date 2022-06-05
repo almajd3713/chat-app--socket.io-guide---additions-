@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node app.js",
-    "dev:build": "tsc --build  -w",
+    "dev:build": "tsc -w",
     "dev:server": "nodemon app.js",
     "start:dev": "concurrently \"npm run dev:*\""
   },

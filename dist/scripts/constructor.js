@@ -1,4 +1,4 @@
-import { createNode, isInViewport } from "./util";
+import { colorIsLight, createNode, isInViewport } from "./util.js";
 let parent = document.querySelector(".messages");
 let scrollCheck = (el) => {
     let viewportCheckEl = Array.from(parent.children)[Array.from(parent.children).indexOf(el) - 3];
@@ -6,32 +6,70 @@ let scrollCheck = (el) => {
         el.scrollIntoView({ block: "center" });
     }
 };
-export let messageConstructor = (message, type) => {
+export let messageConstructor = (message, direction) => {
     let editBtn;
     let find = (q) => base.querySelector(q);
     let base = createNode({
         className: ["message"],
         attributes: [["dir", "auto"]]
     });
-    switch (type) {
+    console.log(base);
+    switch (direction) {
         case "self":
             base.classList.add("util-messageSender");
             base.textContent = message.content;
             break;
-        default:
+        case "other":
+            base.textContent = message.content;
+            base.prepend(nameLabel(message.user));
             break;
     }
-    let addModule = (module) => {
-        switch (module) {
-            case "edit":
-                editBtn = createNode({
-                    textContent: "edit",
-                    className: "configBtn"
-                });
-                base.appendChild(editBtn);
+    if (message.isNotif && message.isNotif[0]) {
+        switch (message.isNotif[1]) {
+            case "hi":
+                base.style.backgroundColor = "#06ea56";
                 break;
-            case "self":
+            case "fi":
+                base.style.backgroundColor = "#ef523e";
         }
-    };
-    return { base, addModule };
+    }
+    // let addModule = (module: modules) => {
+    //   switch (module) {s
+    //     case "edit":
+    //       editBtn = createNode({
+    //         textContent: "edit",
+    //         className: "configBtn"
+    //       }) as HTMLDivElesment
+    //       base.appendChild(editBtn)
+    //       break
+    //   }
+    // }
+    return base;
+};
+// export let oldMessageConstructor = (message: Message) => {
+//   console.log(message)
+//   let base = createNode({
+//     className: ["message"],
+//     attributes: [["dir", "auto"]]
+//   })
+//   base.textContent = message.content
+//   if(message.isNotif) {
+//     console.log("Aye")
+//     base.prepend(nameLabel(message.user))
+//     if (message.user.userId === "AAAAAAAAAAAA") {
+//       base.style.backgroundColor = "yellow"
+//     }
+//   }
+//   return base
+// }
+let nameLabel = (user) => {
+    return createNode({
+        tag: "span",
+        className: "messageHeader",
+        style: {
+            backgroundColor: user.color,
+            color: !colorIsLight(user.color) ? "#eee" : "black"
+        },
+        textContent: user.username
+    });
 };

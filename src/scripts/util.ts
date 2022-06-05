@@ -1,4 +1,4 @@
-import { User } from "./classes"
+import { User } from "./classes.js"
 
 interface Props {
   tag?: string
@@ -33,6 +33,7 @@ export function createNode(props: Props): HTMLElement {
     }); else node.appendChild(createNode(props.subNodes))
   }
   if(props.style) for(let prop in props.style) {
+    // @ts-ignore
     node.style[prop] = props.style[prop]
   }
   if (props.onClick) node.onclick = props.onClick

@@ -1,10 +1,13 @@
 export class Message {
     constructor(messageObject) {
+        this.messageStructure = false;
+        this.isReply = false;
+        this.isNotif = [false, ""];
         this.id = messageObject.id;
         this.content = messageObject.content;
         this.user = messageObject.user;
         this.isImage = messageObject.isImage;
-        this.isReply = false;
+        this.isNotif = messageObject.isNotif;
     }
     auth(user) {
         if (user === this.user.userId)

@@ -6,6 +6,7 @@ interface MessageStructure {
   messageStructure: HTMLElement | boolean
   isImage: boolean | string
   isReply: boolean | Message
+  isNotif: [is: boolean, type: string]
 }
 interface UserStructure {
   username: string
@@ -18,13 +19,14 @@ export class Message implements MessageStructure{
   user: User
   messageStructure: boolean | HTMLElement = false
   isImage: boolean | string
-  isReply: boolean | Message
+  isReply: boolean | Message = false
+  isNotif: [is: boolean, type: string] = [false, ""]
   constructor(messageObject: MessageStructure) {
     this.id = messageObject.id
     this.content = messageObject.content
     this.user = messageObject.user
     this.isImage = messageObject.isImage;
-    this.isReply = false;
+    this.isNotif = messageObject.isNotif
   }
   auth(user: User["userId"]) {
     if(user === this.user.userId) return true
