@@ -127,11 +127,12 @@ io.on("connection", (socket) => {
   //   socket.broadcast.emit("typing", socket.data.user)
   // })
 
-  // socket.on("editSend", (val, message) => {
-  //   let desiredMessage = messages.find(mes => mes.id === message.id)
-  //   desiredMessage.content = val
-  //   socket.broadcast.emit("editReceive", val, message)
-  // })
+  socket.on("edit", (id, change) => {
+    let desiredMessage = messages.find(mes => mes.id === id)
+    desiredMessage.content = change
+    desiredMessage.isEdited = true
+    io.emit("edit", desiredMessage)
+  })
 
   // socket.on("purgeAdmin", password => {
   //   if(password === "galung2020") {
@@ -174,21 +175,3 @@ io.on("connection", (socket) => {
     }
   })
 })
-
-// let notifEmitter = (user, type, socket) => {
-//   let message = new Message({
-//     content: `${user.username} has joined !`,
-//     user: onlinePeople.find("AAAAAAAAAAAA"),
-//     id: idGen(),
-//     messageStructure: false,
-//     isNotif: [true]
-//   })
-//   switch (type) {
-//     case "hi":
-//       message.isNotif[1] = "hi"
-//       break;
-//     case "fi":
-//       message.isNotif[1] = "fi"
-//       break
-//   }
-// } 

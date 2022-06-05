@@ -1,26 +1,29 @@
 
 interface MessageStructure {
   id: string
-  content:string
+  content: string
   user: User
-  messageStructure: HTMLElement | boolean
-  isImage: boolean | string
-  isReply: boolean | Message
+  messageStructure: HTMLElement | false
+  isImage: false | string
+  isReply: false | Message
   isNotif: [is: boolean, type: string]
+  isEdited: boolean
+
 }
 interface UserStructure {
   username: string
   userId: string
   color: string
 }
-export class Message implements MessageStructure{
+export class Message implements MessageStructure {
   id: string
-  content: string
+  content: string = ""
   user: User
-  messageStructure: boolean | HTMLElement = false
-  isImage: boolean | string
-  isReply: boolean | Message = false
+  messageStructure: false | HTMLElement = false
+  isImage: false | string
+  isReply: false | Message = false
   isNotif: [is: boolean, type: string] = [false, ""]
+  isEdited: boolean = false
   constructor(messageObject: MessageStructure) {
     this.id = messageObject.id
     this.content = messageObject.content
