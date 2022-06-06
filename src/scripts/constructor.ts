@@ -162,7 +162,6 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
   //! reply addon
   if(message.isReply) {
     let replyLabel = createNode({className: "replyLabel"})
-    console.log(message.messageStructure)
     messagesDiv.insertBefore(replyLabel, message.messageStructure)
     replyLabel.textContent = `replying to ${message.isReply.user.username}: ${message.isImage ? "picture" : message.isReply.content}`
     replyLabel.style.display = "block"
@@ -202,20 +201,20 @@ let nameLabel = (user: User, isSelf: boolean = false) => {
 //   }
 // }
 
-export let replyFormSwitch: false | Message = false
+export let replyFormSwitch: { message: Message | false } = {message: false}
 export let replyLogic = (replyBtn: HTMLElement, message: Message) => {
   let replyMode = false
   replyBtn.addEventListener("click", () => {
     if (!replyMode) {
       replyMode = true
-      replyFormSwitch = message;
+      replyFormSwitch.message = message;
         input.placeholder = `replying to ${message.user.username}...`;
       (message.messageStructure as HTMLElement).style.backgroundColor = "#f8d362"
       input.placeholder = `replying to ${message.user.username}...`
       input.focus()
     } else {
       replyMode = false;
-      replyFormSwitch = false;
+      replyFormSwitch.message = false;
       (message.messageStructure as HTMLElement).style.backgroundColor = message.color
       input.placeholder = ``
     }

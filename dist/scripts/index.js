@@ -12,9 +12,13 @@ export let currentUser;
 export let messages = [];
 form.addEventListener("submit", e => {
     e.preventDefault();
-    socket.emit(!currentUser ? "messageFirst" : "message", input.value, currentUser, replyFormSwitch);
-    if (replyFormSwitch)
-        replyFormSwitch.messageStructure.style.backgroundColor = replyFormSwitch.color;
+    if (input.value.length !== 0 && /\S/.test(input.value)) {
+        socket.emit(!currentUser ? "messageFirst" : "message", input.value, currentUser, replyFormSwitch.message);
+        if (replyFormSwitch.message) {
+            replyFormSwitch.message.messageStructure.style.backgroundColor = replyFormSwitch.message.color;
+            replyFormSwitch.message = false;
+        }
+    }
     refreshFields();
 });
 socket.on("initUser", (user) => {

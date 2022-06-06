@@ -16,13 +16,18 @@ export let messages: Message[] = []
 
 form.addEventListener("submit", e => {
   e.preventDefault()
-  socket.emit(
-    !currentUser ? "messageFirst" : "message",
-    input.value,
-    currentUser,
-    replyFormSwitch
-  )
-  if(replyFormSwitch) (replyFormSwitch.messageStructure as HTMLElement).style.backgroundColor = replyFormSwitch.color
+  if(input.value.length !== 0 && /\S/.test(input.value)) {
+    socket.emit(
+      !currentUser ? "messageFirst" : "message",
+      input.value,
+      currentUser,
+      replyFormSwitch.message
+    )
+    if (replyFormSwitch.message) {
+      ((replyFormSwitch.message as Message).messageStructure as HTMLElement).style.backgroundColor = (replyFormSwitch.message as Message).color
+      replyFormSwitch.message = false
+    }
+  }
   refreshFields()
 })
 
