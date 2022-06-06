@@ -103,6 +103,8 @@ body {
   color: white;
   float: right;
   margin-left: 2px;
+  cursor: default;
+  user-select: none;
 }
 .deleteBtn {
   background-color: #333;

@@ -1,19 +1,20 @@
 import * as util from "./util.js";
-import { messageConstructor } from "./constructor.js";
+import { messageConstructor, replyFormSwitch } from "./constructor.js";
 // @ts-ignore
 // ignored because io() is imported with the html file, not here
 export let socket = io();
 // @ts-ignore
 window.socket = socket;
-let form = document.getElementById('form');
-let input = document.getElementById('input');
-let messagesDiv = document.querySelector('.messages');
-let currentUser;
+export let form = document.getElementById('form');
+export let input = document.getElementById('input');
+export let messagesDiv = document.querySelector('.messages');
+export let currentUser;
 export let messages = [];
-let replySwitch = false;
 form.addEventListener("submit", e => {
     e.preventDefault();
-    socket.emit(!currentUser ? "messageFirst" : "message", input.value, currentUser);
+    socket.emit(!currentUser ? "messageFirst" : "message", input.value, currentUser, replyFormSwitch);
+    if (replyFormSwitch)
+        replyFormSwitch.messageStructure.style.backgroundColor = replyFormSwitch.color;
     refreshFields();
 });
 socket.on("initUser", (user) => {
@@ -22,7 +23,6 @@ socket.on("initUser", (user) => {
 socket.on("message", (message, type) => {
     messages.push(message);
     messageConstructor(message, currentUser, type);
-    messagesDiv.appendChild(message.messageStructure);
     viewportCheck(message.messageStructure);
 });
 socket.on("edit", (message) => {

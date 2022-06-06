@@ -1,6 +1,7 @@
 export class Message {
     constructor(messageObject) {
         this.content = "";
+        this.color = "white";
         this.messageStructure = false;
         this.isReply = false;
         this.isNotif = [false, ""];
@@ -10,6 +11,7 @@ export class Message {
         this.user = messageObject.user;
         this.isImage = messageObject.isImage;
         this.isNotif = messageObject.isNotif;
+        this.isReply = messageObject.isReply;
     }
     auth(user) {
         if (user === this.user.userId)

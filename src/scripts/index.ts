@@ -1,6 +1,6 @@
 import * as util from "./util.js"
 import {Message, User} from "./classes.js"
-import { messageConstructor, messageDir } from "./constructor.js"
+import { messageConstructor, messageDir, replyFormSwitch } from "./constructor.js"
 import type { Socket } from "socket.io";
 
 // @ts-ignore
@@ -8,20 +8,21 @@ import type { Socket } from "socket.io";
 export let socket: Socket = io()
 // @ts-ignore
 window.socket = socket
-let form = document.getElementById('form') as HTMLFormElement;
-let input = document.getElementById('input') as HTMLInputElement;
-let messagesDiv = document.querySelector('.messages')!;
-let currentUser: User
+export let form = document.getElementById('form') as HTMLFormElement;
+export let input = document.getElementById('input') as HTMLInputElement;
+export let messagesDiv = document.querySelector('.messages')!;
+export let currentUser: User
 export let messages: Message[] = []
-let replySwitch: boolean = false
 
 form.addEventListener("submit", e => {
   e.preventDefault()
   socket.emit(
     !currentUser ? "messageFirst" : "message",
     input.value,
-    currentUser
+    currentUser,
+    replyFormSwitch
   )
+  if(replyFormSwitch) (replyFormSwitch.messageStructure as HTMLElement).style.backgroundColor = replyFormSwitch.color
   refreshFields()
 })
 
@@ -32,7 +33,6 @@ socket.on("initUser", (user: User) => {
 socket.on("message", (message: Message, type: messageDir) => {
   messages.push(message)
   messageConstructor(message, currentUser, type)
-  messagesDiv.appendChild((message.messageStructure as HTMLElement))
   viewportCheck(message.messageStructure as HTMLElement)
 })
 

@@ -84,7 +84,7 @@ let idGen = () => {
   let str = "1234567890qwertyuiopasdfghjklzxcvbnm"
   let id = ""
   for(let i = 0; i <= 11; i ++) {
-    id = id + str[Math.ceil(Math.random() * 36)]
+    id = id + str[Math.ceil(Math.random() * 34)]
   }
   return id
 }
@@ -112,11 +112,12 @@ io.on("connection", (socket) => {
     socket.emit("initUser", user)
     io.emit("message", message, "other")
   })
+
   socket.on("message", (data, user, replyMessage) => {
     let message = new Message({
       content: data, user: user, 
       id: idGen(), messageStructure: false, 
-      isReply: replyMessage ? replyMessage : false
+      isReply: replyMessage
     })
     messages.push(message)
     socket.emit("message", message, "self")

@@ -42,25 +42,6 @@ export function createNode(props) {
         node.onclick = props.onClick;
     return node;
 }
-export let replyFormSwitch = false;
-// export let replyLogic = (replyBtn, message) => {
-//   let replyMode = false
-//   replyBtn.addEventListener("click", e => {
-//     if (!replyMode) {
-//       replyMode = true
-//       replyFormSwitch = message
-//       typingMessage = `replying to ${message.user.username}...`
-//       message.messageStructure.style.backgroundColor = "#f8d362"
-//       input.placeholder = `replying to ${message.user.username}...`
-//       input.focus()
-//     } else {
-//       replyMode = false
-//       replyFormSwitch = false
-//       message.messageStructure.style.backgroundColor = "initial"
-//       input.placeholder = ``
-//     }
-//   })
-// };
 export function isInViewport(element) {
     const rect = element.getBoundingClientRect();
     return (rect.top >= 0 &&

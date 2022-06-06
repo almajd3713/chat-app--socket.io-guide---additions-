@@ -2,11 +2,37 @@ import { Message, User } from "./classes.js";
 import { colorIsLight, createNode, isInViewport } from "./util.js";
 let parent = document.querySelector(".messages")!
 export type messageDir = "self" | "other" | "notif"
-import { messages, socket } from "./index.js";
+import { form, input, messages, messagesDiv, socket } from "./index.js";
 
 export type messageType = "message" | "notif"
 // type modules = "message" | "edit" | "reply" | "image" | "notif"
 let isAdmin = false
+// let changeReplyMessage = (() => {
+//   let _replyMessage: Message | boolean
+//   let setReplyMessage = (newMessage: typeof _replyMessage) => {
+//     if (_replyMessage) {
+//       ((_replyMessage as Message).messageStructure as HTMLElement).style.backgroundColor = (_replyMessage as Message).color
+//       _replyMessage = false
+//     }
+//     else if(!newMessage) {
+//       ((_replyMessage as unknown as Message).messageStructure as HTMLElement).style.backgroundColor = (_replyMessage as unknown as Message).color
+//       input.placeholder = ""
+//       _replyMessage = false
+//     }
+//     _replyMessage = newMessage;
+//     ((_replyMessage as Message).messageStructure as HTMLElement).style.backgroundColor = "#f8d362"
+//     input.placeholder = `replying to ${(_replyMessage as Message).user.username}...`
+//   }
+//   return {
+//     get replyMessage() {
+//       if(_replyMessage) return true
+//       else return false
+//     },
+//     set replyMessage(msg: Message | boolean) {
+//       setReplyMessage(msg)
+//     }
+//   }
+// })()
 
 setTimeout(() => {
   socket.on("adminLogin", () => {
@@ -52,13 +78,16 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
       }
     ]
   })
-  let form = find("form")
+  message.messageStructure = base
+  messagesDiv.appendChild((message.messageStructure))
+
+  let editForm = find("form")
   let text = find(".messageText")
   let editBtn = find(".configBtn")
   let deleteBtn = find(".deleteBtn")
   let replyBtn = find(".replyBtn")
-  let input = find("input") as HTMLInputElement
-  form.style.display = "none"
+  let editInput = find("input") as HTMLInputElement
+  editForm.style.display = "none"
   
   text.textContent = `${message.content} ${message.isEdited ? "(edited)" : ""}`
   //! self/other switch
@@ -66,6 +95,7 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
     case "self":
       base.prepend(nameLabel(message.user, true))
       base.style.backgroundColor = "#b4f3da"
+      message.color = "#b4f3da"
       break;
     case "other":
       base.prepend(nameLabel(message.user))
@@ -75,7 +105,10 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
   //! reply button
   if (message.user.userId === "AAAAAAAAAAAA") {
     replyBtn.remove()
+  } else {
+    replyLogic(replyBtn, message)
   }
+
 
   //! check if user is owner of message
   if (message.isNotif || (user && message.user.userId !== user.userId) || !user) {
@@ -87,18 +120,18 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
   //! edit button
   else {
     editBtn.addEventListener("click", () => {
-    form.style.display = "block";
+    editForm.style.display = "inline-block";
     text.style.display = "none"
     editBtn.style.display = "none";
-    input.value = message.content 
-    input.focus()
+    editInput.value = message.content 
+    editInput.focus()
   })
-    form.addEventListener("submit", e => {
+    editForm.addEventListener("submit", e => {
       e.preventDefault();
-      form.style.display = "none"
+      editForm.style.display = "none"
       text.style.display = "initial"
       editBtn.style.display = "block";
-      socket.emit("edit", message.id, input.value)
+      socket.emit("edit", message.id, editInput.value)
     })
   }
 
@@ -110,20 +143,38 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
     })
   })
 
-  //! notification
+  //! notification addon
   if(message.isNotif && message.isNotif[0]) {
     switch (message.isNotif[1]) {
       case "hi":
         base.style.backgroundColor = "#06ea56"
+        message.color = "#06ea56"
         break;
       case "fi":
         base.style.backgroundColor = "#ef523e"
+        message.color = "#ef523e"
         break;
       case "promotion":
         base.style.backgroundColor = "#f5cc51"
+        message.color = "#f5cc51"
     }
   }
-  message.messageStructure = base
+  //! reply addon
+  if(message.isReply) {
+    let replyLabel = createNode({className: "replyLabel"})
+    console.log(message.messageStructure)
+    messagesDiv.insertBefore(replyLabel, message.messageStructure)
+    replyLabel.textContent = `replying to ${message.isReply.user.username}: ${message.isImage ? "picture" : message.isReply.content}`
+    replyLabel.style.display = "block"
+    replyLabel.addEventListener("click", () => {
+      let div = messages.find(msg => msg.id === (message.isReply as Message).id)!.messageStructure as HTMLElement
+      div.classList.add("replyNoticeAnimation")
+      setTimeout(() => {
+        div.classList.remove("replyNoticeAnimation")
+      }, 3000);
+      div.scrollIntoView({block: "center"})
+    })
+  }
 }
 
 let nameLabel = (user: User, isSelf: boolean = false) => {
@@ -137,3 +188,36 @@ let nameLabel = (user: User, isSelf: boolean = false) => {
     textContent: isSelf ? "you" : user.username
   })
 }
+
+// function formReplyToggle(replySwitch: boolean, message: Message) {
+//   if(replySwitch) {
+//     if(globalReplyMessage) {
+//       (globalReplyMessage.messageStructure as HTMLElement).style.backgroundColor = globalReplyMessage.color
+//     }
+//     input.placeholder = `replying to ${message.user.username}...`;
+//     (message.messageStructure as HTMLElement).style.backgroundColor = "#f8d362"
+//   } else {
+//     input.placeholder = ``;
+//     (message.messageStructure as HTMLElement).style.backgroundColor = message.color
+//   }
+// }
+
+export let replyFormSwitch: false | Message = false
+export let replyLogic = (replyBtn: HTMLElement, message: Message) => {
+  let replyMode = false
+  replyBtn.addEventListener("click", () => {
+    if (!replyMode) {
+      replyMode = true
+      replyFormSwitch = message;
+        input.placeholder = `replying to ${message.user.username}...`;
+      (message.messageStructure as HTMLElement).style.backgroundColor = "#f8d362"
+      input.placeholder = `replying to ${message.user.username}...`
+      input.focus()
+    } else {
+      replyMode = false;
+      replyFormSwitch = false;
+      (message.messageStructure as HTMLElement).style.backgroundColor = message.color
+      input.placeholder = ``
+    }
+  })
+};

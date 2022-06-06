@@ -8,6 +8,7 @@ interface MessageStructure {
   isReply: false | Message
   isNotif: [is: boolean, type: string]
   isEdited: boolean
+  color: string
 
 }
 interface UserStructure {
@@ -18,6 +19,7 @@ interface UserStructure {
 export class Message implements MessageStructure {
   id: string
   content: string = ""
+  color: string = "white"
   user: User
   messageStructure: false | HTMLElement = false
   isImage: false | string
@@ -30,6 +32,7 @@ export class Message implements MessageStructure {
     this.user = messageObject.user
     this.isImage = messageObject.isImage;
     this.isNotif = messageObject.isNotif
+    this.isReply = messageObject.isReply
   }
   auth(user: User["userId"]) {
     if(user === this.user.userId) return true
