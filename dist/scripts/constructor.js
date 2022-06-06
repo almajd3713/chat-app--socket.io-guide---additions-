@@ -1,4 +1,4 @@
-import { colorIsLight, createNode } from "./util.js";
+import { bufferToBase64, colorIsLight, createNode } from "./util.js";
 let parent = document.querySelector(".messages");
 import { input, messages, messagesDiv, socket } from "./index.js";
 // type modules = "message" | "edit" | "reply" | "image" | "notif"
@@ -68,7 +68,10 @@ export let messageConstructor = (message, user, direction) => {
             }, {
                 textContent: "reply",
                 className: "replyBtn"
-            }
+            }, {
+                textContent: "zoom",
+                className: "zoomBtn"
+            }, { tag: "br" }
         ]
     });
     message.messageStructure = base;
@@ -78,6 +81,7 @@ export let messageConstructor = (message, user, direction) => {
     let editBtn = find(".configBtn");
     let deleteBtn = find(".deleteBtn");
     let replyBtn = find(".replyBtn");
+    let zoomBtn = find(".zoomBtn");
     let editInput = find("input");
     editForm.style.display = "none";
     text.textContent = `${message.content} ${message.isEdited ? "(edited)" : ""}`;
@@ -161,6 +165,21 @@ export let messageConstructor = (message, user, direction) => {
             div.scrollIntoView({ block: "center" });
         });
     }
+    //! image addon
+    if (message.isImage) {
+        let image = `data:image/png;base64,${bufferToBase64(message.isImage)}`;
+        let imageDiv = createNode({
+            tag: "img",
+            src: image
+        });
+        message.messageStructure.appendChild(imageDiv);
+        message.messageStructure.style.backgroundColor = message.user.color;
+        zoomBtn.addEventListener("click", () => {
+            imageDiv.classList.toggle("imageZoom");
+        });
+    }
+    else
+        zoomBtn.remove();
 };
 let nameLabel = (user, isSelf = false) => {
     return createNode({

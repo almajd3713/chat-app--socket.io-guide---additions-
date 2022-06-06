@@ -48,7 +48,6 @@ body {
 }
 
 .messages > .message {
-  height: 2.5rem;
   line-height: 2.5rem;
   padding: 0 2rem;
   border-bottom: 1px solid #878787;
@@ -60,10 +59,11 @@ body {
   padding: 0 1rem;
   padding-bottom: 1rem;
 }
-.imageMessage img{
-  width: 35%;
+.message img{
+  width: 20%;
   pointer-events: none;
   transition: all .3s;
+  margin-left: 10rem;
 }
 .imageZoomBtn {
   width: 80%;
@@ -111,6 +111,9 @@ body {
 }
 .replyBtn {
   background-color: lightcoral;
+}
+.zoomBtn {
+  background-color: "#a350f1";
 }
 .messageHeader {
   display: inline-block;

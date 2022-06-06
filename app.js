@@ -113,12 +113,15 @@ io.on("connection", (socket) => {
     io.emit("message", message, "other")
   })
 
-  socket.on("message", (data, user, replyMessage) => {
+  socket.on("message", (data, user, replyMessage, image) => {
     let message = new Message({
       content: data, user: user, 
       id: idGen(), messageStructure: false, 
       isReply: replyMessage
     })
+    if(image) {
+      message.isImage = image
+    }
     messages.push(message)
     socket.emit("message", message, "self")
     socket.broadcast.emit("message", message, "other")

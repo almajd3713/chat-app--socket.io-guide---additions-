@@ -23,10 +23,7 @@ form.addEventListener("submit", e => {
       currentUser,
       replyFormSwitch.message
     )
-    if (replyFormSwitch.message) {
-      ((replyFormSwitch.message as Message).messageStructure as HTMLElement).style.backgroundColor = (replyFormSwitch.message as Message).color
-      replyFormSwitch.message = false
-    }
+    formSwitchReset()
   }
   refreshFields()
 })
@@ -69,9 +66,24 @@ let viewportCheck = (el: HTMLElement) => {
   }
 }
 
-
+let formSwitchReset = () => {
+  if(replyFormSwitch.message) {
+    ((replyFormSwitch.message as Message).messageStructure as HTMLElement).style.backgroundColor = (replyFormSwitch.message as Message).color
+    replyFormSwitch.message = false
+  }
+}
 
 let refreshFields = () => {
   input.value = ""
   input.placeholder = ""
 }
+
+document.addEventListener("paste", async(e) => {
+  if(!currentUser) return;
+  let a = e.clipboardData!.files[0]
+  if(a) {
+    let img = await a.arrayBuffer()
+    socket.emit("message", `Sent an image: `, currentUser, replyFormSwitch.message, img)
+    formSwitchReset()
+  }
+})

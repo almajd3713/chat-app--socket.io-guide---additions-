@@ -1,5 +1,5 @@
 import { Message, User } from "./classes.js";
-import { colorIsLight, createNode, isInViewport } from "./util.js";
+import { bufferToBase64, colorIsLight, createNode, isInViewport } from "./util.js";
 let parent = document.querySelector(".messages")!
 export type messageDir = "self" | "other" | "notif"
 import { form, input, messages, messagesDiv, socket } from "./index.js";
@@ -75,7 +75,10 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
       }, {
         textContent: "reply",
         className: "replyBtn"
-      }
+      }, {
+        textContent: "zoom",
+        className: "zoomBtn"
+      },{tag: "br"}
     ]
   })
   message.messageStructure = base
@@ -86,6 +89,7 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
   let editBtn = find(".configBtn")
   let deleteBtn = find(".deleteBtn")
   let replyBtn = find(".replyBtn")
+  let zoomBtn = find(".zoomBtn")
   let editInput = find("input") as HTMLInputElement
   editForm.style.display = "none"
   
@@ -174,6 +178,20 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
       div.scrollIntoView({block: "center"})
     })
   }
+
+  //! image addon
+  if(message.isImage) {
+    let image = `data:image/png;base64,${bufferToBase64(message.isImage)}`
+    let imageDiv = createNode({
+      tag: "img",
+      src: image
+    })
+    message.messageStructure.appendChild(imageDiv)
+    message.messageStructure.style.backgroundColor = message.user.color
+    zoomBtn.addEventListener("click", () => {
+      imageDiv.classList.toggle("imageZoom")
+    })
+  } else zoomBtn.remove()
 }
 
 let nameLabel = (user: User, isSelf: boolean = false) => {
