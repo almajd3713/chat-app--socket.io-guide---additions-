@@ -59,7 +59,7 @@ body {
   padding: 0 1rem;
   padding-bottom: 1rem;
 }
-.message img{
+img {
   width: 20%;
   pointer-events: none;
   transition: all .3s;

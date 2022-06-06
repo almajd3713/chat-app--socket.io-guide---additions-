@@ -64,7 +64,7 @@ socket.on("dis", () => {
 
 let viewportCheck = (el: HTMLElement) => {
   let messageArr = Array.from(messagesDiv.children)
-  let viewportCheckMessage = messageArr[messageArr.indexOf(el) - 2] as HTMLElement
+  let viewportCheckMessage = messageArr[messageArr.indexOf(el)] as HTMLElement
   if(viewportCheckMessage && util.isInViewport(viewportCheckMessage)) {
     el.scrollIntoView()
   }
