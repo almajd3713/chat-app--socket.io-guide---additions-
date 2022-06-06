@@ -48,30 +48,35 @@ setTimeout(() => {
 export let messageConstructor = (message, user, direction) => {
     let find = (q) => base.querySelector(q);
     let base = createNode({
-        className: ["message"],
         subNodes: [
+            { className: "replyLabel" },
             {
-                tag: "span",
-                className: "messageText"
-            },
-            {
-                tag: "form",
-                subNodes: [{
-                        tag: "input"
-                    }]
-            }, {
-                textContent: "edit",
-                className: "configBtn"
-            }, {
-                textContent: "delete",
-                className: "deleteBtn"
-            }, {
-                textContent: "reply",
-                className: "replyBtn"
-            }, {
-                textContent: "zoom",
-                className: "zoomBtn"
-            }, { tag: "br" }
+                className: ["message"],
+                subNodes: [
+                    {
+                        tag: "span",
+                        className: "messageText"
+                    },
+                    {
+                        tag: "form",
+                        subNodes: [{
+                                tag: "input"
+                            }]
+                    }, {
+                        textContent: "edit",
+                        className: "configBtn"
+                    }, {
+                        textContent: "delete",
+                        className: "deleteBtn"
+                    }, {
+                        textContent: "reply",
+                        className: "replyBtn"
+                    }, {
+                        textContent: "zoom",
+                        className: "zoomBtn"
+                    }, { tag: "br" }
+                ]
+            }
         ]
     });
     message.messageStructure = base;
@@ -88,12 +93,12 @@ export let messageConstructor = (message, user, direction) => {
     //! self/other switch
     switch (direction) {
         case "self":
-            base.prepend(nameLabel(message.user, true));
+            base.children[1].prepend(nameLabel(message.user, true));
             base.style.backgroundColor = "#b4f3da";
             message.color = "#b4f3da";
             break;
         case "other":
-            base.prepend(nameLabel(message.user));
+            base.children[1].prepend(nameLabel(message.user));
             break;
     }
     //! reply button
@@ -148,12 +153,15 @@ export let messageConstructor = (message, user, direction) => {
             case "promotion":
                 base.style.backgroundColor = "#f5cc51";
                 message.color = "#f5cc51";
+                break;
+            case "kick":
+                base.style.backgroundColor = "black";
+                base.style.color = "white";
         }
     }
     //! reply addon
     if (message.isReply) {
-        let replyLabel = createNode({ className: "replyLabel" });
-        messagesDiv.insertBefore(replyLabel, message.messageStructure);
+        let replyLabel = find(".replyLabel");
         replyLabel.textContent = `replying to ${message.isReply.user.username}: ${message.isImage ? "picture" : message.isReply.content}`;
         replyLabel.style.display = "block";
         replyLabel.addEventListener("click", () => {
@@ -165,6 +173,8 @@ export let messageConstructor = (message, user, direction) => {
             div.scrollIntoView({ block: "center" });
         });
     }
+    else
+        find(".replyLabel").remove();
     //! image addon
     if (message.isImage) {
         let image = `data:image/png;base64,${bufferToBase64(message.isImage)}`;
@@ -208,6 +218,13 @@ export let replyFormSwitch = { message: false };
 export let replyLogic = (replyBtn, message) => {
     let replyMode = false;
     replyBtn.addEventListener("click", () => {
+        if (replyFormSwitch.message && replyFormSwitch.message.id === message.id) {
+            replyFormSwitch.message.messageStructure.style.backgroundColor = replyFormSwitch.message.color;
+            input.placeholder = ``;
+            replyFormSwitch.message = false;
+            replyMode = false;
+            return 0;
+        }
         if (!replyMode) {
             replyMode = true;
             replyFormSwitch.message = message;

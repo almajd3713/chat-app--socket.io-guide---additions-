@@ -45,6 +45,10 @@ socket.on("delete", (message) => {
     desiredMessage.messageStructure.remove();
     messages = messages.filter(mes => mes.id !== message.id);
 });
+socket.on("dis", () => {
+    console.log("Aye");
+    socket.disconnect(true);
+});
 let viewportCheck = (el) => {
     let messageArr = Array.from(messagesDiv.children);
     let viewportCheckMessage = messageArr[messageArr.indexOf(el) - 2];

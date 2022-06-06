@@ -19,6 +19,9 @@
     let adminLogin = (code) => {
       socket.emit("adminLogin", code)
     };
+    let adminKick = (code, user) => {
+      socket.emit("adminKick", code, user)
+    };
   </script>
 </body>
 

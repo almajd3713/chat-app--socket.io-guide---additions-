@@ -47,10 +47,14 @@ socket.on("edit", (message: Message) => {
 socket.on("delete", (message: Message) => {
   let desiredMessage = messages.find(mes => mes.id === message.id)!;
   (desiredMessage.messageStructure as HTMLElement).remove()
+  
   messages = messages.filter(mes => mes.id !== message.id);
 })
 
-
+socket.on("dis", () => {
+  console.log("Aye")
+  socket.disconnect(true)
+})
 
 
 

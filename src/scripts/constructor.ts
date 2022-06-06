@@ -55,30 +55,35 @@ setTimeout(() => {
 export let messageConstructor = (message: Message, user: User, direction?: messageDir) => {
   let find = (q:string) => (base.querySelector(q) as HTMLElement)!
   let base = createNode({
-    className: ["message"],
     subNodes: [
+      { className: "replyLabel" },
       {
-        tag: "span",
-        className: "messageText"
-      },
-      {
-        tag: "form",
-        subNodes: [{
-          tag: "input"
-        }]
-      }, {
-        textContent: "edit",
-        className: "configBtn"
-      }, {
-        textContent: "delete",
-        className: "deleteBtn"
-      }, {
-        textContent: "reply",
-        className: "replyBtn"
-      }, {
-        textContent: "zoom",
-        className: "zoomBtn"
-      },{tag: "br"}
+        className: ["message"],
+        subNodes: [
+          {
+            tag: "span",
+            className: "messageText"
+          },
+          {
+            tag: "form",
+            subNodes: [{
+              tag: "input"
+            }]
+          }, {
+            textContent: "edit",
+            className: "configBtn"
+          }, {
+            textContent: "delete",
+            className: "deleteBtn"
+          }, {
+            textContent: "reply",
+            className: "replyBtn"
+          }, {
+            textContent: "zoom",
+            className: "zoomBtn"
+          }, { tag: "br" }
+        ]
+      }
     ]
   })
   message.messageStructure = base
@@ -97,12 +102,12 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
   //! self/other switch
   switch (direction) {
     case "self":
-      base.prepend(nameLabel(message.user, true))
+      base.children[1].prepend(nameLabel(message.user, true))
       base.style.backgroundColor = "#b4f3da"
       message.color = "#b4f3da"
       break;
     case "other":
-      base.prepend(nameLabel(message.user))
+      base.children[1].prepend(nameLabel(message.user))
       break
   }
 
@@ -161,12 +166,15 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
       case "promotion":
         base.style.backgroundColor = "#f5cc51"
         message.color = "#f5cc51"
+        break;
+      case "kick":
+        base.style.backgroundColor = "black"
+        base.style.color = "white"
     }
   }
   //! reply addon
   if(message.isReply) {
-    let replyLabel = createNode({className: "replyLabel"})
-    messagesDiv.insertBefore(replyLabel, message.messageStructure)
+    let replyLabel = find(".replyLabel")
     replyLabel.textContent = `replying to ${message.isReply.user.username}: ${message.isImage ? "picture" : message.isReply.content}`
     replyLabel.style.display = "block"
     replyLabel.addEventListener("click", () => {
@@ -177,7 +185,7 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
       }, 3000);
       div.scrollIntoView({block: "center"})
     })
-  }
+  } else find(".replyLabel").remove()
 
   //! image addon
   if(message.isImage) {
@@ -223,6 +231,13 @@ export let replyFormSwitch: { message: Message | false } = {message: false}
 export let replyLogic = (replyBtn: HTMLElement, message: Message) => {
   let replyMode = false
   replyBtn.addEventListener("click", () => {
+    if(replyFormSwitch.message && (replyFormSwitch.message as Message).id === message.id) {
+      ((replyFormSwitch.message as Message).messageStructure as HTMLElement).style.backgroundColor = (replyFormSwitch.message as Message).color
+      input.placeholder = ``
+      replyFormSwitch.message = false
+      replyMode = false
+      return 0
+    }
     if (!replyMode) {
       replyMode = true
       replyFormSwitch.message = message;

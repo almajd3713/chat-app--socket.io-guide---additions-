@@ -14,9 +14,13 @@ let port = process.env.PORT || 3000
 
 import {Server} from "socket.io"
 
+import fs from "fs"
+let kickImage = fs.readFileSync("./dist/style/mucho.jpg")
+
 app.use(express.static(`${__dirname}/dist`))
 app.use(bodyParser.raw({type: "image/*"}))
 app.use(express.json())
+
 
 
 app.get("/", (req, res) => {
@@ -65,7 +69,8 @@ let onlinePeople = (() => {
   let add = (user) => list.push(user)
   let remove = (user) => list = list.filter(u => u.userId !== user.userId)
   let find = (userId) => list.find(u => u.userId === userId)
-  return {list, find, add, remove}
+  let findByName = (username) => list.find(u => u.username === username)
+  return {list, find, add, remove, findByName}
 })()
 onlinePeople.add(new User({
   username: "Server",
@@ -73,6 +78,7 @@ onlinePeople.add(new User({
   color: "#555"
 }))
 let messages = []
+let socketList = []
 
 let colorPicker = () => {
   let colors = [
@@ -90,6 +96,7 @@ let idGen = () => {
 }
 
 io.on("connection", (socket) => {
+  socketList.push(socket)
   messages.forEach(message => {
     socket.emit("message", message, "other")
   })
@@ -164,12 +171,23 @@ io.on("connection", (socket) => {
   //   socket.broadcast.emit("message", message)
   // })
 
-  // socket.on("kickPerson", (password, user => {
-  //   if(password === "galung2020") {
-  //     let desiredUser = onlinePeople.find(person => person.username === user)
-  //     if(desiredUser) socket.emit("discon")
-  //   }
-  // }))
+  socket.on("adminKick", (password, user) => {
+    if(password === "galung2020") {
+      let desiredUser = onlinePeople.findByName(user)
+      if(desiredUser) {
+        let s = socketList.find(sock => sock.id === desiredUser.userId)
+        if(s) {
+          s.emit("message", new Message({
+            content: "Muchas Gracias por joderte Idiota",
+            user: onlinePeople.find("AAAAAAAAAAAA"),
+            isNotif: ["true", "kick"],
+            isImage: kickImage
+          }), "other")
+          s.emit("dis")
+        }
+      }
+    }
+  })
   socket.on("adminLogin", code => {
     let isAdmin = false
     let secret = ["g41ung4"]

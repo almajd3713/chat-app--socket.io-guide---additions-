@@ -47,7 +47,7 @@ body {
   width: 17.5rem
 }
 
-.messages > .message {
+.message {
   line-height: 2.5rem;
   padding: 0 2rem;
   border-bottom: 1px solid #878787;
