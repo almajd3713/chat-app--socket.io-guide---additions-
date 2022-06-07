@@ -4,7 +4,6 @@ const require = createRequire(import.meta.url)
 import {dirname} from "path"
 const bodyParser = require("body-parser")
 import {fileURLToPath} from "url"
-import {fileTypeFromBuffer} from "file-type"
 const __dirname = dirname(fileURLToPath(import.meta.url))
 // end of fix
 
@@ -26,41 +25,9 @@ app.use(express.json())
 app.get("/", (req, res) => {
   res.sendFile("")
 })
-// app.post("/", (req, res) => {
-//   let oldData = JSON.parse(fs.readFileSync("./dist/images/imageData.json"))
-//   oldData.push(req.body)
-//   fs.writeFileSync("./dist/images/imageData.json", JSON.stringify(oldData))
-//   res.sendStatus(200)
-// })
 
 let server = app.listen(port, () => console.log("listening on *:3000"))
 let io = new Server(server)
-
-
-// let messagePOST = (message) => {
-//   let database = JSON.parse(fs.readFileSync("./dist/database.json"))
-//   database.push([message.user.userId, message.content])
-//   fs.writeFileSync("./dist/database.json", JSON.stringify(database))
-// }
-// let messageGET = () => {
-//   let database = JSON.parse(fs.readFileSync("./dist`/database.json"))
-//   let messages = database.map(data => {
-//     return new Message({
-//       content: data[1],
-//       user: findUser(data[0])
-//     })
-//   })
-//   return messages
-// }
-// let findUser = (id) => {
-//   let user = onlinePeople.find(person => person.userId === id)
-//   if(user) return user
-//   else return new User({
-//     username: `${id.substr(0, 5)} (offline)`,
-//     id: id,
-//     color: "#000"
-//   })
-// }
 
 import {Message, User} from "./dist/scripts/classes.js"
 
@@ -133,10 +100,7 @@ io.on("connection", (socket) => {
     socket.emit("message", message, "self")
     socket.broadcast.emit("message", message, "other")
   })
-  
-  // socket.on("typing", () => {
-  //   socket.broadcast.emit("typing", socket.data.user)
-  // })
+
 
   socket.on("edit", (id, change) => {
     let desiredMessage = messages.find(mes => mes.id === id)
@@ -149,27 +113,6 @@ io.on("connection", (socket) => {
     messages = messages.filter(mes => mes.id !== message.id)
     io.emit("delete", message)
   })
-
-  // socket.on("purgeAdmin", password => {
-  //   if(password === "galung2020") {
-  //     messages = []
-  //     io.emit("purgeStatus", true)
-  //   } else {
-  //     socket.emit("purgeStatus", false)
-  //   }
-  // })
-
-  // socket.on("imageSend", (buffer, user) => {
-  //   let message = new Message({
-  //     isImage: true,
-  //     image: buffer,
-  //     user: user,
-  //     id: idGen()
-  //   })
-  //   messages.push(message)
-  //   socket.emit("messageAdmin", message)
-  //   socket.broadcast.emit("message", message)
-  // })
 
   socket.on("adminKick", (password, user) => {
     if(password === "galung2020") {

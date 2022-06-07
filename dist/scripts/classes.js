@@ -27,3 +27,10 @@ export class User {
         this.color = userObject.color;
     }
 }
+export class Emote {
+    constructor(emoteStruct) {
+        this.prefix = emoteStruct.prefix;
+        this.type = emoteStruct.type;
+        this.content = emoteStruct.content;
+    }
+}

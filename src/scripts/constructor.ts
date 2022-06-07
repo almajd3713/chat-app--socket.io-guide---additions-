@@ -1,8 +1,9 @@
-import { Message, User } from "./classes.js";
+import { Message, User } from "./classes";
 import { bufferToBase64, colorIsLight, createNode, isInViewport } from "./util.js";
 let parent = document.querySelector(".messages")!
 export type messageDir = "self" | "other" | "notif"
 import { form, input, messages, messagesDiv, socket } from "./index.js";
+import messageProcess from "./messageProcess.js";
 
 export type messageType = "message" | "notif"
 // type modules = "message" | "edit" | "reply" | "image" | "notif"
@@ -98,7 +99,7 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
   let editInput = find("input") as HTMLInputElement
   editForm.style.display = "none"
   
-  text.textContent = `${message.content} ${message.isEdited ? "(edited)" : ""}`
+  text.innerHTML = messageProcess(message)
   //! self/other switch
   switch (direction) {
     case "self":

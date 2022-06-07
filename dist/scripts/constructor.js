@@ -1,6 +1,7 @@
 import { bufferToBase64, colorIsLight, createNode } from "./util.js";
 let parent = document.querySelector(".messages");
 import { input, messages, messagesDiv, socket } from "./index.js";
+import messageProcess from "./messageProcess.js";
 // type modules = "message" | "edit" | "reply" | "image" | "notif"
 let isAdmin = false;
 // let changeReplyMessage = (() => {
@@ -89,7 +90,7 @@ export let messageConstructor = (message, user, direction) => {
     let zoomBtn = find(".zoomBtn");
     let editInput = find("input");
     editForm.style.display = "none";
-    text.textContent = `${message.content} ${message.isEdited ? "(edited)" : ""}`;
+    text.innerHTML = messageProcess(message);
     //! self/other switch
     switch (direction) {
         case "self":

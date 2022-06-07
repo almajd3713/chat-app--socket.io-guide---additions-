@@ -16,6 +16,7 @@ interface UserStructure {
   userId: string
   color: string
 }
+
 export class Message implements MessageStructure {
   id: string
   content: string = ""
@@ -49,4 +50,21 @@ export class User implements UserStructure{
   username: string
   userId: string
   color: string
+}
+
+
+interface emoteStructure {
+  prefix: string
+  type: "emoji" | "custom"
+  content: string
+}
+export class Emote implements emoteStructure {
+  prefix: string
+  type: "emoji" | "custom"
+  content: string
+  constructor(emoteStruct: emoteStructure) {
+    this.prefix = emoteStruct.prefix
+    this.type = emoteStruct.type
+    this.content = emoteStruct.content
+  }
 }

@@ -59,7 +59,7 @@ body {
   padding: 0 1rem;
   padding-bottom: 1rem;
 }
-img {
+.message + img {
   width: 20%;
   pointer-events: none;
   transition: all .3s;
@@ -139,3 +139,9 @@ img {
 }
 
 .util-messageSender {text-align: right; padding-right: 1rem;}
+
+.emote {
+  width: 2rem;
+  transform: translateY(35%);
+  display: inline-block;
+}
