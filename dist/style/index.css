@@ -141,7 +141,7 @@ body {
 .util-messageSender {text-align: right; padding-right: 1rem;}
 
 .emote {
-  width: 2rem;
+  width: 1.65rem;
   transform: translateY(35%);
   display: inline-block;
 }
