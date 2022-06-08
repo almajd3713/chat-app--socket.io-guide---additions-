@@ -31,18 +31,31 @@ export let emotes = (() => {
     };
     return { find, add, init };
 })();
-emotes.add(new Emote({
-    prefix: ":laugh:",
-    type: "emoji",
-    content: "😂"
-}));
-emotes.add(new Emote({
-    prefix: ":augh:",
-    type: "custom",
-    content: "augh.webp"
-}));
-emotes.add(new Emote({
-    prefix: ":siuu:",
-    type: "custom",
-    content: "siuu.webp"
-}));
+let emoteArr = [
+    ["laugh", "😂"],
+    ["laughBig", "🤣"],
+    ["facepalm", "🤦‍♂️"],
+    ["inlove", "😍"],
+    ["heart", "💚"],
+    ["cry", "😭"],
+    ["angry", "😡"],
+    ["thumbUp", "👍"],
+    ["thumbDown", "👎"],
+    ["pointLeft", "👈"],
+    ["pointRight", "👉"],
+];
+let customEmoteArr = ["pwease", "siuu", "augh", "holy", "notGood", "sedj", "sussy", "woman"];
+emoteArr.forEach(arr => {
+    emotes.add(new Emote({
+        prefix: `:${arr[0]}Emote:`,
+        type: "emoji",
+        content: arr[1]
+    }));
+});
+customEmoteArr.forEach(emote => {
+    emotes.add(new Emote({
+        prefix: `:${emote}:`,
+        type: "custom",
+        content: `${emote}.webp`
+    }));
+});
