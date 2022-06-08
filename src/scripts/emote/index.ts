@@ -4,6 +4,7 @@ import { input } from "../index.js"
 import { createNode } from "../util.js"
 
 export let emotes = (() => {
+  let isInited: boolean = false
   let emoteArr: Emote[] = []
   let find = (q: string) => emoteArr.find(emo => emo.prefix === q)!
   let add = (q: Emote) => {emoteArr.push(q)}
@@ -28,8 +29,9 @@ export let emotes = (() => {
     emoteTrigger.addEventListener("click", () => {
       emoteBox.classList.toggle("emoteBoxVisible")
     })
+    isInited = true
   }
-  return {find, add, init}
+  return {find, add, init, isInited}
 })()
 
 let emoteArr: string[][] = [

@@ -3,6 +3,7 @@ import {Message, User} from "./classes.js"
 import { messageConstructor, messageDir, replyFormSwitch } from "./constructor.js"
 import type { Socket } from "socket.io";
 import { emotes } from "./emote/index.js";
+import messagePreProcess from "./messagePreProcess.js";
 
 // @ts-ignore
 // ignored because io() is imported with the html file, not here
@@ -18,19 +19,21 @@ export let messages: Message[] = []
 form.addEventListener("submit", e => {
   e.preventDefault()
   if(input.value.length !== 0 && /\S/.test(input.value)) {
-    socket.emit(
-      !currentUser ? "messageFirst" : "message",
-      input.value,
-      currentUser,
-      replyFormSwitch.message
-    )
-    formSwitchReset()
+    if(messagePreProcess(input.value)) {
+      socket.emit(
+        !currentUser ? "messageFirst" : "message",
+        input.value,
+        currentUser,
+        replyFormSwitch.message
+      )
+      formSwitchReset()
+    }
   }
   refreshFields()
 })
 
 socket.on("initUser", (user: User) => {
-  emotes.init()
+  if(!emotes.isInited) emotes.init()
   currentUser = user
 })
 

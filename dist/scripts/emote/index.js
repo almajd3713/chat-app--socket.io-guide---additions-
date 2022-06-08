@@ -2,6 +2,7 @@ import { Emote } from "../classes.js";
 import { input } from "../index.js";
 import { createNode } from "../util.js";
 export let emotes = (() => {
+    let isInited = false;
     let emoteArr = [];
     let find = (q) => emoteArr.find(emo => emo.prefix === q);
     let add = (q) => { emoteArr.push(q); };
@@ -28,8 +29,9 @@ export let emotes = (() => {
         emoteTrigger.addEventListener("click", () => {
             emoteBox.classList.toggle("emoteBoxVisible");
         });
+        isInited = true;
     };
-    return { find, add, init };
+    return { find, add, init, isInited };
 })();
 let emoteArr = [
     ["laugh", "😂"],

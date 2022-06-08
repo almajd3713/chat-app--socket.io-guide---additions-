@@ -39,7 +39,7 @@ let onlinePeople = (() => {
   let findByName = (username) => list.find(u => u.username === username)
   return {list, find, add, remove, findByName}
 })()
-onlinePeople.add(new User({
+let serverUser = (new User({
   username: "Server",
   userId: "AAAAAAAAAAAA",
   color: "#555"
@@ -77,7 +77,7 @@ io.on("connection", (socket) => {
     onlinePeople.add(user)
     let message = new Message({ 
       content: `${user.username} has joined !`, 
-      user: onlinePeople.find("AAAAAAAAAAAA"), 
+      user: serverUser, 
       id: idGen(), 
       messageStructure: false, 
       isNotif: [true, "hi"]
@@ -122,7 +122,7 @@ io.on("connection", (socket) => {
         if(s) {
           s.emit("message", new Message({
             content: "Muchas Gracias por joderte Idiota",
-            user: onlinePeople.find("AAAAAAAAAAAA"),
+            user: serverUser,
             isNotif: ["true", "kick"],
             isImage: kickImage
           }), "other")
@@ -141,18 +141,45 @@ io.on("connection", (socket) => {
       socket.emit("adminLogin")
       socket.emit("message", new Message({
         content: "You are now promoted to an admin !",
-        user: onlinePeople.find("AAAAAAAAAAAA"),
+        user: serverUser,
         isNotif: [true, "promotion"],
         id: idGen()
       }), "other")
     }
   })
 
+
+  socket.on("chatCommand", (command, args) => {
+    let str = ``
+    switch (command) {
+      case "notifListPeople":
+        str = `Online people are:`
+        onlinePeople.list.forEach((person, i, arr) => {
+          str = `${str} ${person.username}${arr[i + 1] ? ", " : "."}`
+        })
+        break;
+      case "setColor":
+        let user = onlinePeople.find(args[0])
+        user.color = args[1]
+        socket.emit("initUser", user)
+        str = `Color ${args[1]} has been set successfully`
+        break;
+      case "notification":
+        str = args
+    }
+    socket.emit("message", new Message({
+      content: str,
+      user: serverUser,
+      isNotif: [true, "command"],
+      id: idGen()
+    }), "other")
+  })
+
   socket.on("disconnect", () => {
     if(socket.data.user) {
       let message = new Message({
         content: `${socket.data.user.username} has left us, how sedj :(`,
-        user: onlinePeople.find("AAAAAAAAAAAA"),
+        user: serverUser,
         id: idGen(),
         isNotif: [true, "fi"]
       })  

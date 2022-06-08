@@ -1,35 +1,8 @@
 import { bufferToBase64, colorIsLight, createNode } from "./util.js";
 let parent = document.querySelector(".messages");
 import { input, messages, messagesDiv, socket } from "./index.js";
-import messageProcess from "./messageProcess.js";
-// type modules = "message" | "edit" | "reply" | "image" | "notif"
+import messageProcess from "./messagePostProcess.js";
 let isAdmin = false;
-// let changeReplyMessage = (() => {
-//   let _replyMessage: Message | boolean
-//   let setReplyMessage = (newMessage: typeof _replyMessage) => {
-//     if (_replyMessage) {
-//       ((_replyMessage as Message).messageStructure as HTMLElement).style.backgroundColor = (_replyMessage as Message).color
-//       _replyMessage = false
-//     }
-//     else if(!newMessage) {
-//       ((_replyMessage as unknown as Message).messageStructure as HTMLElement).style.backgroundColor = (_replyMessage as unknown as Message).color
-//       input.placeholder = ""
-//       _replyMessage = false
-//     }
-//     _replyMessage = newMessage;
-//     ((_replyMessage as Message).messageStructure as HTMLElement).style.backgroundColor = "#f8d362"
-//     input.placeholder = `replying to ${(_replyMessage as Message).user.username}...`
-//   }
-//   return {
-//     get replyMessage() {
-//       if(_replyMessage) return true
-//       else return false
-//     },
-//     set replyMessage(msg: Message | boolean) {
-//       setReplyMessage(msg)
-//     }
-//   }
-// })()
 setTimeout(() => {
     socket.on("adminLogin", () => {
         isAdmin = true;
@@ -40,12 +13,6 @@ setTimeout(() => {
         });
     });
 }, 100);
-// let scrollCheck = (el:HTMLElement) => {
-//   let viewportCheckEl = Array.from(parent.children)[Array.from(parent.children).indexOf(el) - 3] as HTMLElement
-//   if (viewportCheckEl && isInViewport(viewportCheckEl)) {
-//     el.scrollIntoView({ block: "center" })
-//   }
-// }
 export let messageConstructor = (message, user, direction) => {
     let find = (q) => base.querySelector(q);
     let base = createNode({
@@ -158,6 +125,10 @@ export let messageConstructor = (message, user, direction) => {
             case "kick":
                 base.style.backgroundColor = "black";
                 base.style.color = "white";
+                break;
+            case "command":
+                base.style.backgroundColor = "#777";
+                base.style.color = "#ddd";
         }
     }
     //! reply addon
@@ -198,23 +169,11 @@ let nameLabel = (user, isSelf = false) => {
         className: "messageHeader",
         style: {
             backgroundColor: user.color,
-            color: !colorIsLight(user.color) ? "#eee" : "black"
+            color: colorIsLight(user.color) ? "black" : "#eee"
         },
         textContent: isSelf ? "you" : user.username
     });
 };
-// function formReplyToggle(replySwitch: boolean, message: Message) {
-//   if(replySwitch) {
-//     if(globalReplyMessage) {
-//       (globalReplyMessage.messageStructure as HTMLElement).style.backgroundColor = globalReplyMessage.color
-//     }
-//     input.placeholder = `replying to ${message.user.username}...`;
-//     (message.messageStructure as HTMLElement).style.backgroundColor = "#f8d362"
-//   } else {
-//     input.placeholder = ``;
-//     (message.messageStructure as HTMLElement).style.backgroundColor = message.color
-//   }
-// }
 export let replyFormSwitch = { message: false };
 export let replyLogic = (replyBtn, message) => {
     let replyMode = false;

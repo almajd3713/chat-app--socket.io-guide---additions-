@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import * as util from "./util.js";
 import { messageConstructor, replyFormSwitch } from "./constructor.js";
 import { emotes } from "./emote/index.js";
+import messagePreProcess from "./messagePreProcess.js";
 // @ts-ignore
 // ignored because io() is imported with the html file, not here
 export let socket = io();
@@ -23,13 +24,16 @@ export let messages = [];
 form.addEventListener("submit", e => {
     e.preventDefault();
     if (input.value.length !== 0 && /\S/.test(input.value)) {
-        socket.emit(!currentUser ? "messageFirst" : "message", input.value, currentUser, replyFormSwitch.message);
-        formSwitchReset();
+        if (messagePreProcess(input.value)) {
+            socket.emit(!currentUser ? "messageFirst" : "message", input.value, currentUser, replyFormSwitch.message);
+            formSwitchReset();
+        }
     }
     refreshFields();
 });
 socket.on("initUser", (user) => {
-    emotes.init();
+    if (!emotes.isInited)
+        emotes.init();
     currentUser = user;
 });
 socket.on("message", (message, type) => {
