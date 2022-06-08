@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import * as util from "./util.js";
 import { messageConstructor, replyFormSwitch } from "./constructor.js";
+import { emotes } from "./emote/index.js";
 // @ts-ignore
 // ignored because io() is imported with the html file, not here
 export let socket = io();
@@ -28,6 +29,7 @@ form.addEventListener("submit", e => {
     refreshFields();
 });
 socket.on("initUser", (user) => {
+    emotes.init();
     currentUser = user;
 });
 socket.on("message", (message, type) => {

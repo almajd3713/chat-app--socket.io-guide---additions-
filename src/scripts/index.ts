@@ -2,6 +2,7 @@ import * as util from "./util.js"
 import {Message, User} from "./classes.js"
 import { messageConstructor, messageDir, replyFormSwitch } from "./constructor.js"
 import type { Socket } from "socket.io";
+import { emotes } from "./emote/index.js";
 
 // @ts-ignore
 // ignored because io() is imported with the html file, not here
@@ -29,6 +30,7 @@ form.addEventListener("submit", e => {
 })
 
 socket.on("initUser", (user: User) => {
+  emotes.init()
   currentUser = user
 })
 

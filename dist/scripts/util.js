@@ -78,7 +78,6 @@ export let welcomeMessageBuild = (list) => {
     return str;
 };
 export let bufferToBase64 = (buffer) => {
-    // let base = btoa([].reduce.call(new Uint8Array(buffer), function (p, c) { return p + String.fromCharCode(c) }, ''))
     // @ts-ignore
     // too lazu to figure how this works, good as long as it works
     let base = btoa([].reduce.call(new Uint8Array(buffer), function (p, c) { return p + String.fromCharCode(c); }, ''));
