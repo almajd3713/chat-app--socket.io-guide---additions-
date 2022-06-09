@@ -40,9 +40,11 @@ export default (message) => {
                     socket.emit("chatCommand", "openPDF", [args[1]]);
                 }
                 bool = false;
+                break;
             case "listFiles":
                 socket.emit("chatCommand", "listFiles");
                 bool = false;
+                break;
             default:
                 socket.emit("chatCommand", "notification", "this command is not valid !");
                 bool = false;

@@ -1,7 +1,7 @@
 import { socket } from "./index.js";
 
 let musicPlayer = new Audio()
-let tracks: string[] = ["adventureLine.opus"]
+let tracks: string[] = ["adventureLine", "saul"]
 
 export default () => {
   let adminPlayMusic = (code: string, user: string, song: string) => {
@@ -10,8 +10,7 @@ export default () => {
   // @ts-ignore
   window.adminPlayMusic = adminPlayMusic
   socket.on("adminMusic", (song: number) => {
-    musicPlayer.src = `./audio/${tracks[song]}`
+    musicPlayer.src = `./audio/${tracks[song]}.opus`
     musicPlayer.play()
-    musicPlayer.loop = true
   })
 }

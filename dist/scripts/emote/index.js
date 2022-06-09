@@ -46,7 +46,7 @@ let emoteArr = [
     ["pointLeft", "👈"],
     ["pointRight", "👉"],
 ];
-let customEmoteArr = ["pwease", "siuu", "augh", "holy", "notGood", "sedj", "sussy", "woman"];
+let customEmoteArr = ["pwease", "siuu", "augh", "holy", "notGood", "sedj", "sussy", "woman", "saul"];
 emoteArr.forEach(arr => {
     emotes.add(new Emote({
         prefix: `:${arr[0]}Emote:`,

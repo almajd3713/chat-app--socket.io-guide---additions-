@@ -174,7 +174,7 @@ io.on("connection", (socket) => {
         str = `processing request...`
         break;
       case "help":
-        str = "Available commands: /listPeople, /setColor COLOR, /listVisible, /help, /viewFile FILE, /listFile"
+        str = "Available commands: /listPeople, /setColor COLOR, /listVisible, /help, /viewFile FILE, /listFiles"
         break;
       case "openPDF":
         socket.emit("openPdf", args[0])
