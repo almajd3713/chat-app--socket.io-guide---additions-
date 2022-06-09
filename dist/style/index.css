@@ -179,3 +179,26 @@ body {
   height: 15rem;
   border: 2px solid #aaa;
 }
+
+.popupContainer {
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.popup {
+  background-color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70%;
+  height: 70%;
+  transform: translate(-50%, -50%);
+}
+.visible {
+  display: block;
+}
