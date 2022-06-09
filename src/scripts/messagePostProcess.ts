@@ -25,8 +25,7 @@ export default (message: Message) => {
   textChange("@\\w*", (mention: string) => {
     if(currentUser && currentUser.username === mention.slice(1)) {
       (message.messageStructure as HTMLElement).style.backgroundColor = "#f8abe7"
-      return `<span style="color: #1295ba">${mention}</span>`
-    } else return mention
+    } return `<span style="color: #1295ba">${mention}</span>`
   })
 
   //! bold
@@ -34,6 +33,12 @@ export default (message: Message) => {
     return `<span style="font-weight: bold">${bold.slice(1, bold.length - 1)}</span>`
   })
   
+  //! line break
   return newMessage
 }
 
+export let replyPostProcess = (reply: string) => {
+  let newReply: string = reply
+  newReply = newReply.replace(/(:\S*:)/g, "")
+  return newReply
+}

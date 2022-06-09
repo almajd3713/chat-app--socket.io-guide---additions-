@@ -1,8 +1,15 @@
 import { bufferToBase64, colorIsLight, createNode } from "./util.js";
 let parent = document.querySelector(".messages");
 import { input, messages, messagesDiv, socket } from "./index.js";
-import messageProcess from "./messagePostProcess.js";
+import messageProcess, { replyPostProcess } from "./messagePostProcess.js";
 let isAdmin = false;
+let unViewedMessageCount = 0;
+document.addEventListener("visibilitychange", e => {
+    if (document.visibilityState === "visible") {
+        unViewedMessageCount = 0;
+        document.title = `Chat app for our marks lol`;
+    }
+});
 setTimeout(() => {
     socket.on("adminLogin", () => {
         isAdmin = true;
@@ -49,6 +56,10 @@ export let messageConstructor = (message, user, direction) => {
     });
     message.messageStructure = base;
     messagesDiv.appendChild((message.messageStructure));
+    if (document.visibilityState === "hidden") {
+        unViewedMessageCount += 1;
+        document.title = `Chat app for our marks lol (${unViewedMessageCount})`;
+    }
     let editForm = find("form");
     let text = find(".messageText");
     let editBtn = find(".configBtn");
@@ -134,7 +145,7 @@ export let messageConstructor = (message, user, direction) => {
     //! reply addon
     if (message.isReply) {
         let replyLabel = find(".replyLabel");
-        replyLabel.textContent = `replying to ${message.isReply.user.username}: ${message.isImage ? "picture" : message.isReply.content}`;
+        replyLabel.textContent = replyPostProcess(`replying to ${message.isReply.user.username}: ${message.isImage ? "picture" : message.isReply.content}`);
         replyLabel.style.display = "block";
         replyLabel.addEventListener("click", () => {
             let div = messages.find(msg => msg.id === message.isReply.id).messageStructure;

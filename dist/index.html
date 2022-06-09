@@ -11,21 +11,13 @@
   <div class="messages"></div>
   <h4 class="typing"></h4>
   <form id="form" action="">
-    <input id="input" autocomplete="off" placeholder="What's your name ?" />
+    <input id="input" autocomplete="off" placeholder="What's your name ?" maxlength="100"/>
     <img class="emoteTrigger" src="./style/emoji.png"></img>
     <button>Send</button>
   </form>
   <div class="emoteBox"></div>
 
   <script src="./scripts/index.js" type="module"></script>
-  <script>
-    let adminLogin = (code) => {
-      socket.emit("adminLogin", code)
-    };
-    let adminKick = (code, user) => {
-      socket.emit("adminKick", code, user)
-    };
-  </script>
 </body>
 
 </html>

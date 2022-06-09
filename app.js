@@ -173,6 +173,9 @@ io.on("connection", (socket) => {
         io.emit("visibilityCheck", false)
         str = `processing request...`
         break;
+      case "help":
+        str = "Available commands: /listPeople, /setColor COLOR, /listVisible, /help"
+        break;
     }
     if(letOutput) socket.emit("message", new Message({
       content: str,
@@ -213,7 +216,7 @@ io.on("connection", (socket) => {
       messages.push(message)
       io.emit("message", message, "other")
       onlinePeople.remove(socket.data.user)
-      visiblePeople.filter(u => u.username !== socket.data.user.username)
+      visiblePeople.filter(u => u.userId !== socket.id)
     }
   })
 })

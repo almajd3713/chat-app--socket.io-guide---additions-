@@ -31,9 +31,14 @@ export default (message) => {
                 socket.emit("chatCommand", "viewCheck");
                 bool = false;
                 break;
+            case "help":
+                socket.emit("chatCommand", "help");
+                bool = false;
+                break;
             default:
                 socket.emit("chatCommand", "notification", "this command is not valid !");
                 bool = false;
+                break;
         }
     });
     return bool;

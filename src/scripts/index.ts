@@ -15,7 +15,6 @@ export let input = document.getElementById('input') as HTMLInputElement;
 export let messagesDiv = document.querySelector('.messages')!;
 export let currentUser: User
 export let messages: Message[] = []
-
 form.addEventListener("submit", e => {
   e.preventDefault()
   if(input.value.length !== 0 && /\S/.test(input.value)) {

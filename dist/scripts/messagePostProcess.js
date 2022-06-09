@@ -24,14 +24,18 @@ export default (message) => {
     textChange("@\\w*", (mention) => {
         if (currentUser && currentUser.username === mention.slice(1)) {
             message.messageStructure.style.backgroundColor = "#f8abe7";
-            return `<span style="color: #1295ba">${mention}</span>`;
         }
-        else
-            return mention;
+        return `<span style="color: #1295ba">${mention}</span>`;
     });
     //! bold
     textChange("\\*.[^\\*]*\\*", (bold) => {
         return `<span style="font-weight: bold">${bold.slice(1, bold.length - 1)}</span>`;
     });
+    //! line break
     return newMessage;
+};
+export let replyPostProcess = (reply) => {
+    let newReply = reply;
+    newReply = newReply.replace(/(:\S*:)/g, "");
+    return newReply;
 };

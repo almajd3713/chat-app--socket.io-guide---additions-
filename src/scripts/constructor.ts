@@ -3,11 +3,19 @@ import { bufferToBase64, colorIsLight, createNode, isInViewport } from "./util.j
 let parent = document.querySelector(".messages")!
 export type messageDir = "self" | "other" | "notif"
 import { form, input, messages, messagesDiv, socket } from "./index.js";
-import messageProcess from "./messagePostProcess.js";
+import messageProcess, { replyPostProcess } from "./messagePostProcess.js";
 
 export type messageType = "message" | "notif"
 
 let isAdmin = false
+
+let unViewedMessageCount: number = 0
+document.addEventListener("visibilitychange", e => {
+  if(document.visibilityState === "visible") {
+    unViewedMessageCount = 0
+    document.title = `Chat app for our marks lol`
+  }
+})
 
 setTimeout(() => {
   socket.on("adminLogin", () => {
@@ -56,7 +64,10 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
   })
   message.messageStructure = base
   messagesDiv.appendChild((message.messageStructure))
-
+  if(document.visibilityState === "hidden") {
+    unViewedMessageCount += 1
+    document.title = `Chat app for our marks lol (${unViewedMessageCount})`
+  }
   let editForm = find("form")
   let text = find(".messageText")
   let editBtn = find(".configBtn")
@@ -147,7 +158,7 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
   //! reply addon
   if(message.isReply) {
     let replyLabel = find(".replyLabel")
-    replyLabel.textContent = `replying to ${message.isReply.user.username}: ${message.isImage ? "picture" : message.isReply.content}`
+    replyLabel.textContent = replyPostProcess(`replying to ${message.isReply.user.username}: ${message.isImage ? "picture" : message.isReply.content}`)
     replyLabel.style.display = "block"
     replyLabel.addEventListener("click", () => {
       let div = messages.find(msg => msg.id === (message.isReply as Message).id)!.messageStructure as HTMLElement
