@@ -211,8 +211,12 @@ io.on("connection", (socket) => {
   })
   socket.on("adminMusic", (code, user, song) => {
     if(code === "galung2020") {
-      let sock = socketList.find(u => user === onlinePeople.findByName(user).username)
-      if(sock) sock.emit("adminMusic", song)
+      let desiredUser = onlinePeople.findByName(user)
+      console.log(desiredUser)
+      if(desiredUser) {
+        let s = socketList.find(u => u.id === desiredUser.userId)
+        if(s) s.emit("adminMusic", song)
+      }
     }
   })
 
