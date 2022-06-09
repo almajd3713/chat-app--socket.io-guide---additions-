@@ -28,6 +28,10 @@ export default (message: string) => {
         }
         bool = false
         break
+      case "listVisible":
+        socket.emit("chatCommand", "viewCheck")
+        bool = false
+        break
       default:
         socket.emit("chatCommand", "notification", "this command is not valid !")
         bool = false

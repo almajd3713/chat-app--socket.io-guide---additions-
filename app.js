@@ -46,6 +46,7 @@ let serverUser = (new User({
 }))
 let messages = []
 let socketList = []
+let visiblePeople = []
 
 let colorPicker = () => {
   let colors = [
@@ -151,6 +152,7 @@ io.on("connection", (socket) => {
 
   socket.on("chatCommand", (command, args) => {
     let str = ``
+    let letOutput = true
     switch (command) {
       case "notifListPeople":
         str = `Online people are:`
@@ -166,13 +168,38 @@ io.on("connection", (socket) => {
         break;
       case "notification":
         str = args
+        break;
+      case "viewCheck":
+        io.emit("visibilityCheck", false)
+        str = `processing request...`
+        break;
     }
-    socket.emit("message", new Message({
+    if(letOutput) socket.emit("message", new Message({
       content: str,
       user: serverUser,
       isNotif: [true, "command"],
       id: idGen()
     }), "other")
+  })
+  socket.on("visibilityCheck", (val, user) => {
+    if (val === "visible" && !visiblePeople.find(u => u.userId === user.userId)) {
+      visiblePeople.push(onlinePeople.find(user.userId))
+    }
+    else if(val === "hidden" && visiblePeople.find(u => u.userId === user.userId)) {
+      visiblePeople = visiblePeople.filter(u => u.userId !== user.userId)
+    }
+    setTimeout(() => {
+      let str = `people viewing site are:`
+      visiblePeople.forEach((person, i, arr) => {
+        str = `${str} ${person.username}${arr[i + 1] ? ", " : "."}`
+      })
+      socket.emit("visibilityCheck", new Message({
+        content: str,
+        user: serverUser,
+        id: idGen(),
+        isNotif: [true, "command"]
+      }))
+    }, 1000)
   })
 
   socket.on("disconnect", () => {
@@ -186,6 +213,7 @@ io.on("connection", (socket) => {
       messages.push(message)
       io.emit("message", message, "other")
       onlinePeople.remove(socket.data.user)
+      visiblePeople.filter(u => u.username !== socket.data.user.username)
     }
   })
 })

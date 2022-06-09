@@ -55,6 +55,14 @@ socket.on("dis", () => {
     console.log("Aye");
     socket.disconnect(true);
 });
+socket.on("visibilityCheck", (val) => {
+    if (!currentUser)
+        return;
+    else if (!val)
+        socket.emit("visibilityCheck", document.visibilityState, currentUser);
+    else
+        messageConstructor(val, currentUser);
+});
 let viewportCheck = (el) => {
     let messageArr = Array.from(messagesDiv.children);
     let viewportCheckMessage = messageArr[messageArr.indexOf(el)];

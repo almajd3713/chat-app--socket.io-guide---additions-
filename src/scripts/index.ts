@@ -61,11 +61,11 @@ socket.on("dis", () => {
   socket.disconnect(true)
 })
 
-
-
-
-
-
+socket.on("visibilityCheck", (val: false | Message) => {
+  if(!currentUser) return;
+  else if(!val) socket.emit("visibilityCheck", document.visibilityState, currentUser)
+  else messageConstructor(val, currentUser)
+})
 
 let viewportCheck = (el: HTMLElement) => {
   let messageArr = Array.from(messagesDiv.children)
