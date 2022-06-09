@@ -209,6 +209,12 @@ io.on("connection", (socket) => {
       }))
     }, 1000)
   })
+  socket.on("adminMusic", (code, user, song) => {
+    if(code === "galung2020") {
+      let sock = socketList.find(u => user === onlinePeople.findByName(user).username)
+      if(sock) sock.emit("adminMusic", song)
+    }
+  })
 
   socket.on("disconnect", () => {
     if(socket.data.user) {

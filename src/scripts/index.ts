@@ -5,6 +5,7 @@ import type { Socket } from "socket.io";
 import { emotes } from "./emote/index.js";
 import messagePreProcess from "./messagePreProcess.js";
 import type * as PDFObject from "pdfobject";
+import musicPlayer from "./musicPlayer.js";
 
 // @ts-ignore
 // ignored because io() is imported with the html file, not here
@@ -17,6 +18,22 @@ export let messagesDiv = document.querySelector('.messages')!;
 let embedPdfDiv = document.querySelector(".popup") as HTMLElement
 export let currentUser: User
 export let messages: Message[] = []
+let inputHistory = (() => {
+  let list: string[] = []
+  let add = (msg: string) => {list.push(msg); pointer = list.length - 1}
+  let remove = (msg: string) => { list.filter(m => m !== msg); pointer = list.length - 1}
+  let pointer: number = -1
+  let changeInput = (dir: "up" | "down") => {
+    if(dir === "up" && list[pointer]) {
+      input.value = list[pointer]
+      pointer -= 1
+    } else if (dir === "down" && list[pointer + 1]) {
+      pointer += 1
+      input.value = list[pointer]
+    } else input.value = ""
+  }
+  return {add, remove, changeInput}
+})()
 form.addEventListener("submit", e => {
   e.preventDefault()
   if(input.value.length !== 0 && /\S/.test(input.value)) {
@@ -29,6 +46,7 @@ form.addEventListener("submit", e => {
       )
       formSwitchReset()
     }
+    inputHistory.add(input.value)
   }
   refreshFields()
 })
@@ -43,6 +61,7 @@ socket.on("message", (message: Message, type: messageDir) => {
   messageConstructor(message, currentUser, type)
   viewportCheck(message.messageStructure as HTMLElement)
 })
+
 
 socket.on("edit", (message: Message) => {
   let desiredMessage = messages.find(mes => mes.id === message.id)!
@@ -74,9 +93,19 @@ socket.on("openPdf", (pdfFile: string) => {
   document.querySelector(".popupContainer")!.classList.add("visible")
 })
 window.addEventListener("keyup", e => {
-  if (e.key === "Escape") document.querySelector(".popupContainer")!.classList.remove("visible")
+  switch (e.key) {
+    case "Escape":
+      document.querySelector(".popupContainer")!.classList.remove("visible")
+      break;
+    case "ArrowUp":
+      inputHistory.changeInput("up")
+      break;
+    case "ArrowDown":
+      inputHistory.changeInput("down")
+      break;
+  }
 })
-
+musicPlayer()
 let viewportCheck = (el: HTMLElement) => {
   let messageArr = Array.from(messagesDiv.children)
   let viewportCheckMessage = messageArr[messageArr.indexOf(el)] as HTMLElement
