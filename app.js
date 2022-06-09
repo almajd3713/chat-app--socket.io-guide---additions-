@@ -174,8 +174,13 @@ io.on("connection", (socket) => {
         str = `processing request...`
         break;
       case "help":
-        str = "Available commands: /listPeople, /setColor COLOR, /listVisible, /help"
+        str = "Available commands: /listPeople, /setColor COLOR, /listVisible, /help, /viewFile FILE, /listFile"
         break;
+      case "openPDF":
+        socket.emit("openPdf", args[0])
+        letOutput = false
+      case "listFile":
+        str = "Available files: chemBersham.pdf"
     }
     if(letOutput) socket.emit("message", new Message({
       content: str,

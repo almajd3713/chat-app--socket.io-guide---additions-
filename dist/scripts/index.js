@@ -19,6 +19,7 @@ window.socket = socket;
 export let form = document.getElementById('form');
 export let input = document.getElementById('input');
 export let messagesDiv = document.querySelector('.messages');
+let embedPdfDiv = document.querySelector(".popup");
 export let currentUser;
 export let messages = [];
 form.addEventListener("submit", e => {
@@ -62,6 +63,15 @@ socket.on("visibilityCheck", (val) => {
         socket.emit("visibilityCheck", document.visibilityState, currentUser);
     else
         messageConstructor(val, currentUser);
+});
+socket.on("openPdf", (pdfFile) => {
+    // @ts-ignore
+    PDFObject.embed(`./pdf/${pdfFile}`, embedPdfDiv);
+    document.querySelector(".popupContainer").classList.add("visible");
+});
+window.addEventListener("keyup", e => {
+    if (e.key === "Escape")
+        document.querySelector(".popupContainer").classList.remove("visible");
 });
 let viewportCheck = (el) => {
     let messageArr = Array.from(messagesDiv.children);

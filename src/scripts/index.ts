@@ -4,6 +4,7 @@ import { messageConstructor, messageDir, replyFormSwitch } from "./constructor.j
 import type { Socket } from "socket.io";
 import { emotes } from "./emote/index.js";
 import messagePreProcess from "./messagePreProcess.js";
+import type * as PDFObject from "pdfobject";
 
 // @ts-ignore
 // ignored because io() is imported with the html file, not here
@@ -13,6 +14,7 @@ window.socket = socket
 export let form = document.getElementById('form') as HTMLFormElement;
 export let input = document.getElementById('input') as HTMLInputElement;
 export let messagesDiv = document.querySelector('.messages')!;
+let embedPdfDiv = document.querySelector(".popup") as HTMLElement
 export let currentUser: User
 export let messages: Message[] = []
 form.addEventListener("submit", e => {
@@ -64,6 +66,15 @@ socket.on("visibilityCheck", (val: false | Message) => {
   if(!currentUser) return;
   else if(!val) socket.emit("visibilityCheck", document.visibilityState, currentUser)
   else messageConstructor(val, currentUser)
+})
+
+socket.on("openPdf", (pdfFile: string) => {
+  // @ts-ignore
+  PDFObject.embed(`./pdf/${pdfFile}`, embedPdfDiv)
+  document.querySelector(".popupContainer")!.classList.add("visible")
+})
+window.addEventListener("keyup", e => {
+  if (e.key === "Escape") document.querySelector(".popupContainer")!.classList.remove("visible")
 })
 
 let viewportCheck = (el: HTMLElement) => {

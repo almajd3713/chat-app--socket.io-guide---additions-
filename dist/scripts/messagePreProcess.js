@@ -35,6 +35,11 @@ export default (message) => {
                 socket.emit("chatCommand", "help");
                 bool = false;
                 break;
+            case "viewFile":
+                if (/\w\.pdf/.test(args[1])) {
+                    socket.emit("chatCommand", "openPDF", [args[1]]);
+                }
+                bool = false;
             default:
                 socket.emit("chatCommand", "notification", "this command is not valid !");
                 bool = false;
