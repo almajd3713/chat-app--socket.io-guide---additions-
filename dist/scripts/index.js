@@ -12,6 +12,7 @@ import { messageConstructor, replyFormSwitch } from "./constructor.js";
 import { emotes } from "./emote/index.js";
 import messagePreProcess from "./messagePreProcess.js";
 import musicPlayer from "./musicPlayer.js";
+import imageLibrary from "./imageLibrary.js";
 // @ts-ignore
 // ignored because io() is imported with the html file, not here
 export let socket = io();
@@ -20,7 +21,8 @@ window.socket = socket;
 export let form = document.getElementById('form');
 export let input = document.getElementById('input');
 export let messagesDiv = document.querySelector('.messages');
-let embedPdfDiv = document.querySelector(".popup");
+let embedPdfDiv = document.querySelector("#pdfviewer");
+export let popupContainer = document.querySelector(".popupContainer");
 export let currentUser;
 export let messages = [];
 let inputHistory = (() => {
@@ -57,10 +59,16 @@ socket.on("initUser", (user) => {
     if (!emotes.isInited)
         emotes.init();
     currentUser = user;
+    // let musicPlayer = new Audio()
+    // musicPlayer.src = `./audio/saul.opus`
+    // musicPlayer.play()
+    // musicPlayer.loop = true
 });
 socket.on("message", (message, type) => {
     messages.push(message);
     messageConstructor(message, currentUser, type);
+    if (message.isImage)
+        imageLibrary.add(message);
     viewportCheck(message.messageStructure);
 });
 socket.on("edit", (message) => {
@@ -71,6 +79,7 @@ socket.on("edit", (message) => {
 socket.on("delete", (message) => {
     let desiredMessage = messages.find(mes => mes.id === message.id);
     desiredMessage.messageStructure.remove();
+    imageLibrary.remove(desiredMessage);
     messages = messages.filter(mes => mes.id !== message.id);
 });
 socket.on("dis", () => {
@@ -88,12 +97,14 @@ socket.on("visibilityCheck", (val) => {
 socket.on("openPdf", (pdfFile) => {
     // @ts-ignore
     PDFObject.embed(`./pdf/${pdfFile}`, embedPdfDiv);
-    document.querySelector(".popupContainer").classList.add("visible");
+    popupContainer.classList.add("visible");
+    document.getElementById("pdfviewer").classList.add("visible");
 });
 window.addEventListener("keyup", e => {
     switch (e.key) {
         case "Escape":
-            document.querySelector(".popupContainer").classList.remove("visible");
+            popupContainer.classList.remove("visible");
+            document.getElementById("pdfviewer").classList.remove("visible");
             break;
         case "ArrowUp":
             inputHistory.changeInput("up");
@@ -101,6 +112,11 @@ window.addEventListener("keyup", e => {
         case "ArrowDown":
             inputHistory.changeInput("down");
             break;
+        case "ArrowRight":
+            imageLibrary.move("up");
+            break;
+        case "ArrowLeft":
+            imageLibrary.move("down");
     }
 });
 musicPlayer();

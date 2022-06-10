@@ -4,6 +4,7 @@ let parent = document.querySelector(".messages")!
 export type messageDir = "self" | "other" | "notif"
 import { form, input, messages, messagesDiv, socket } from "./index.js";
 import messageProcess, { replyPostProcess } from "./messagePostProcess.js";
+import imageLibrary from "./imageLibrary.js";
 
 export type messageType = "message" | "notif"
 
@@ -55,7 +56,7 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
             textContent: "reply",
             className: "replyBtn"
           }, {
-            textContent: "zoom",
+            textContent: "view",
             className: "zoomBtn"
           }, { tag: "br" }
         ]
@@ -161,12 +162,16 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
     replyLabel.textContent = replyPostProcess(`replying to ${message.isReply.user.username}: ${message.isImage ? "picture" : message.isReply.content}`)
     replyLabel.style.display = "block"
     replyLabel.addEventListener("click", () => {
-      let div = messages.find(msg => msg.id === (message.isReply as Message).id)!.messageStructure as HTMLElement
-      div.classList.add("replyNoticeAnimation")
-      setTimeout(() => {
-        div.classList.remove("replyNoticeAnimation")
-      }, 3000);
-      div.scrollIntoView({block: "center"})
+      let msg = messages.find(msg => msg.id === (message.isReply as Message).id)
+      if(msg) {
+        let div = msg.messageStructure as HTMLElement
+        div.classList.add("replyNoticeAnimation")
+        setTimeout(() => {
+          div.classList.remove("replyNoticeAnimation")
+        }, 3000);
+        div.scrollIntoView({ block: "center" })
+      }
+
     })
   } else find(".replyLabel").remove()
 
@@ -177,10 +182,11 @@ export let messageConstructor = (message: Message, user: User, direction?: messa
       tag: "img",
       src: image
     })
+
     message.messageStructure.appendChild(imageDiv)
     message.messageStructure.style.backgroundColor = message.user.color
     zoomBtn.addEventListener("click", () => {
-      imageDiv.classList.toggle("imageZoom")
+      imageLibrary.display(message)
     })
   } else zoomBtn.remove()
 }

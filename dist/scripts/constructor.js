@@ -2,6 +2,7 @@ import { bufferToBase64, colorIsLight, createNode } from "./util.js";
 let parent = document.querySelector(".messages");
 import { input, messages, messagesDiv, socket } from "./index.js";
 import messageProcess, { replyPostProcess } from "./messagePostProcess.js";
+import imageLibrary from "./imageLibrary.js";
 let isAdmin = false;
 let unViewedMessageCount = 0;
 document.addEventListener("visibilitychange", e => {
@@ -47,7 +48,7 @@ export let messageConstructor = (message, user, direction) => {
                         textContent: "reply",
                         className: "replyBtn"
                     }, {
-                        textContent: "zoom",
+                        textContent: "view",
                         className: "zoomBtn"
                     }, { tag: "br" }
                 ]
@@ -148,12 +149,15 @@ export let messageConstructor = (message, user, direction) => {
         replyLabel.textContent = replyPostProcess(`replying to ${message.isReply.user.username}: ${message.isImage ? "picture" : message.isReply.content}`);
         replyLabel.style.display = "block";
         replyLabel.addEventListener("click", () => {
-            let div = messages.find(msg => msg.id === message.isReply.id).messageStructure;
-            div.classList.add("replyNoticeAnimation");
-            setTimeout(() => {
-                div.classList.remove("replyNoticeAnimation");
-            }, 3000);
-            div.scrollIntoView({ block: "center" });
+            let msg = messages.find(msg => msg.id === message.isReply.id);
+            if (msg) {
+                let div = msg.messageStructure;
+                div.classList.add("replyNoticeAnimation");
+                setTimeout(() => {
+                    div.classList.remove("replyNoticeAnimation");
+                }, 3000);
+                div.scrollIntoView({ block: "center" });
+            }
         });
     }
     else
@@ -168,7 +172,7 @@ export let messageConstructor = (message, user, direction) => {
         message.messageStructure.appendChild(imageDiv);
         message.messageStructure.style.backgroundColor = message.user.color;
         zoomBtn.addEventListener("click", () => {
-            imageDiv.classList.toggle("imageZoom");
+            imageLibrary.display(message);
         });
     }
     else

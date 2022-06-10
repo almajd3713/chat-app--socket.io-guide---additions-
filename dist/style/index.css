@@ -65,6 +65,7 @@ body {
   pointer-events: none;
   transition: all .3s;
   margin-left: 10rem;
+  z-index: 3;
 }
 .imageZoomBtn {
   width: 80%;
@@ -98,7 +99,6 @@ body {
 [class$="Btn"] {
   text-align: center;
   background-color: gray;
-  display: inline-block;
   height: 40px;
   padding: 0 .5rem;
   color: white;
@@ -196,9 +196,13 @@ body {
   top: 50%;
   left: 50%;
   width: 70%;
-  height: 70%;
+  height: 80%;
   transform: translate(-50%, -50%);
 }
 .visible {
-  display: block;
+  display: block !important;
+}
+#pdfviewer, #imageviewer {display: none;}
+#imageviewer img {
+  width: 100%
 }
