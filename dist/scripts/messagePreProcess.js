@@ -27,7 +27,7 @@ export default (message) => {
                 }
                 bool = false;
                 break;
-            case "listVisible":
+            case "listVisible" || "V":
                 socket.emit("chatCommand", "viewCheck");
                 bool = false;
                 break;

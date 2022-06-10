@@ -20,10 +20,12 @@ export let emotes = (() => {
                 emoteDiv.textContent = emote.content;
             emoteBox.appendChild(emoteDiv);
             emoteDiv.addEventListener("click", () => {
-                input.setRangeText(`${emote.prefix} `);
-                let end = input.value.length;
-                input.setSelectionRange(end, end);
-                input.focus();
+                if (input.value.length <= 100) {
+                    input.setRangeText(`${emote.prefix} `);
+                    let end = input.value.length;
+                    input.setSelectionRange(end, end);
+                    input.focus();
+                }
             });
         });
         emoteTrigger.addEventListener("click", () => {
@@ -46,7 +48,7 @@ let emoteArr = [
     ["pointLeft", "👈"],
     ["pointRight", "👉"],
 ];
-let customEmoteArr = ["pwease", "siuu", "augh", "holy", "notGood", "sedj", "sussy", "woman", "saul"];
+let customEmoteArr = ["pwease", "siuu", "holy", "notGood", "sedj", "sussy", "woman", "saul"];
 emoteArr.forEach(arr => {
     emotes.add(new Emote({
         prefix: `:${arr[0]}Emote:`,

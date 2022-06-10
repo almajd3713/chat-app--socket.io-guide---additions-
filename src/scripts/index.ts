@@ -113,11 +113,12 @@ window.addEventListener("keyup", e => {
     case "ArrowDown":
       inputHistory.changeInput("down")
       break;
-    case "ArrowRight":
+    case "ArrowLeft":
       imageLibrary.move("up")
       break;
-    case "ArrowLeft":
+    case "ArrowRight":
       imageLibrary.move("down")
+      break;
   }
 })
 musicPlayer()
