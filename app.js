@@ -182,7 +182,7 @@ io.on("connection", (socket) => {
         socket.emit("openPdf", args[0])
         letOutput = false
       case "listFiles":
-        str = "Available files: chemBersham.pdf"
+        str = "Available files: math.pdf"
     }
     if(letOutput) (isIO ? io : socket).emit("message", new Message({
       content: str,
