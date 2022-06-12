@@ -15,34 +15,33 @@ export default (message: string) => {
   textTrigger("(/\\w*)\\s?(.*[^\\s*])?", (command: string) => {
     let args = command.split(" ")
     switch (args[0].slice(1)) {
-      case "listPeople":
+      case "lp":
         socket.emit("chatCommand", "notifListPeople")
         bool = false
         break
-      case "setColor":
+      case "sc":
         if(colorHexRegExp.test(args[1])) {
-          console.log(args[1])
         socket.emit("chatCommand", "setColor", [currentUser.userId, args[1]])
         } else {
           socket.emit("chatCommand", "notification", "You didn't send a valid color ! send only hex or rgb colors.")
         }
         bool = false
         break
-      case "listVisible" || "V":
+      case "v":
         socket.emit("chatCommand", "viewCheck")
         bool = false
         break;
-      case "help":
+      case "h":
         socket.emit("chatCommand", "help")
         bool = false
         break;
-      case "viewFile":
+      case "f":
         if(/\w\.pdf/.test(args[1])) {
           socket.emit("chatCommand", "openPDF", [args[1]])
         }
         bool = false
         break;
-      case "listFiles":
+      case "lf":
         socket.emit("chatCommand", "listFiles")
         bool = false
         break;

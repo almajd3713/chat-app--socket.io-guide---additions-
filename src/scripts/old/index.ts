@@ -230,7 +230,6 @@ socket.on("message", (message) => {
 })
 
 socket.on("initUser", (user) => {
-  console.log(user)
   currentUser = user
 })
 

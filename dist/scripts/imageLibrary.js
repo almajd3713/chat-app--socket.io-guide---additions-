@@ -1,6 +1,12 @@
 import { popupContainer } from "./index.js";
 import { bufferToBase64 } from "./util.js";
 let imageContainer = document.querySelector("#imageviewer");
+setTimeout(() => popupContainer.addEventListener("click", () => {
+    if (popupContainer.classList.contains("visible"))
+        popupContainer.classList.remove("visible");
+    if (imageContainer.classList.contains("visible"))
+        imageContainer.classList.remove("visible");
+}), 500);
 export default (() => {
     let list = [];
     let pointer = 0;
@@ -20,13 +26,6 @@ export default (() => {
             else if (dir === "down" && list[pointer + 1])
                 pointer += 1;
             imageContainer.innerHTML = `<img src="data:image/png;base64,${bufferToBase64(list[pointer].isImage)}"/>`;
-            // if (dir === "up" && list[pointer]) {
-            //   imageContainer.innerHTML = `<img src="data:image/png;base64,${bufferToBase64(list[pointer].isImage as string)}"/>`
-            //   pointer -= 1
-            // } else if (dir === "down" && list[pointer + 1]) {
-            //   pointer += 1
-            //   imageContainer.innerHTML = `<img src="data:image/png;base64,${bufferToBase64(list[pointer].isImage as string)}"/>`
-            // } else return;
         }
     };
     return { add, remove, display, move };

@@ -134,7 +134,7 @@ io.on("connection", (socket) => {
   })
   socket.on("adminLogin", code => {
     let isAdmin = false
-    let secret = ["g41ung4"]
+    let secret = ["y4h1a", "reDw4n3"]
     secret.forEach(pw => {
       if(pw === code) isAdmin = true
     })
@@ -174,7 +174,7 @@ io.on("connection", (socket) => {
         str = `processing request...`
         break;
       case "help":
-        str = "Available commands: /listPeople, /setColor COLOR, /listVisible, /help, /viewFile FILE, /listFiles"
+        str = "Available commands: /lp(list people), /sc COLOR, /v(list visible people), /h, /f FILE, /lf (listFiles)"
         break;
       case "openPDF":
         socket.emit("openPdf", args[0])
@@ -231,7 +231,24 @@ io.on("connection", (socket) => {
       messages.push(message)
       io.emit("message", message, "other")
       onlinePeople.remove(socket.data.user)
-      visiblePeople.filter(u => u.userId !== socket.id)
+      visiblePeople = visiblePeople.filter(u => u.userId !== socket.id)
+    }
+  })
+  socket.on("adminPurge", code => {
+    if(code === "galung2020") {
+      socket.emit("message", new Message({
+        content: `Server is restarting...`,
+        user: serverUser,
+        id: idGen(),
+        isNotif: [true, "command"]
+      }))
+      io.emit("adminPurge")
+      setTimeout(() => {
+        messages = []
+        onlinePeople.list = []
+        visiblePeople = []
+        socketList = []
+      }, 10);
     }
   })
 })

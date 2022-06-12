@@ -85,7 +85,6 @@ socket.on("delete", (message: Message) => {
 })
 
 socket.on("dis", () => {
-  console.log("Aye")
   socket.disconnect(true)
 })
 
@@ -151,3 +150,11 @@ document.addEventListener("paste", async(e) => {
     formSwitchReset()
   }
 })
+
+let adminPurge = (code: string) => socket.emit("adminPurge", code)
+// @ts-ignore
+window.adminPurge = adminPurge
+let adminLogin = (code: string) => socket.emit("adminLogin", code)
+// @ts-ignore
+window.adminLogin = adminLogin
+socket.on("adminPurge", () => location.reload())

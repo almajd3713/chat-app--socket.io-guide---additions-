@@ -83,7 +83,6 @@ socket.on("delete", (message) => {
     messages = messages.filter(mes => mes.id !== message.id);
 });
 socket.on("dis", () => {
-    console.log("Aye");
     socket.disconnect(true);
 });
 socket.on("visibilityCheck", (val) => {
@@ -148,3 +147,10 @@ document.addEventListener("paste", (e) => __awaiter(void 0, void 0, void 0, func
         formSwitchReset();
     }
 }));
+let adminPurge = (code) => socket.emit("adminPurge", code);
+// @ts-ignore
+window.adminPurge = adminPurge;
+let adminLogin = (code) => socket.emit("adminLogin", code);
+// @ts-ignore
+window.adminLogin = adminLogin;
+socket.on("adminPurge", () => location.reload());
