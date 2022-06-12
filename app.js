@@ -153,6 +153,7 @@ io.on("connection", (socket) => {
   socket.on("chatCommand", (command, args) => {
     let str = ``
     let letOutput = true
+    let isIO = false
     switch (command) {
       case "notifListPeople":
         str = `Online people are:`
@@ -164,7 +165,8 @@ io.on("connection", (socket) => {
         let user = onlinePeople.find(args[0])
         user.color = args[1]
         socket.emit("initUser", user)
-        str = `Color ${args[1]} has been set successfully`
+        str = `${user.username} has changed his color to <span style="background-color: ${args[1]}; color: ${colorIsLight(args[1]) ? "black" : "white"}">${args[1]}</span>`
+        isIO = true
         break;
       case "notification":
         str = args
@@ -182,7 +184,7 @@ io.on("connection", (socket) => {
       case "listFiles":
         str = "Available files: chemBersham.pdf"
     }
-    if(letOutput) socket.emit("message", new Message({
+    if(letOutput) (isIO ? io : socket).emit("message", new Message({
       content: str,
       user: serverUser,
       isNotif: [true, "command"],
@@ -252,3 +254,13 @@ io.on("connection", (socket) => {
     }
   })
 })
+
+function colorIsLight(color) {
+  if (!/^#(?:[0-9a-fA-F]{3}){1,2}$/.test(color)) return true
+  const hex = color.replace('#', '');
+  const c_r = parseInt(hex.substr(0, 2), 16);
+  const c_g = parseInt(hex.substr(2, 2), 16);
+  const c_b = parseInt(hex.substr(4, 2), 16);
+  const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+  return brightness > 155;
+}
