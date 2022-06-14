@@ -1,5 +1,6 @@
 import { User } from "./classes.js"
 
+let CryptoJS = window.CryptoJS
 interface Props {
   tag?: string
   className?: string | string[]
@@ -84,3 +85,19 @@ export let bufferToBase64 = (buffer: string) => {
   let base = btoa([].reduce.call(new Uint8Array(buffer), function (p, c) { return p + String.fromCharCode(c) }, ''))
   return base
 };
+
+// @ts-ignore
+export let encryptor = (item, method: "encrypt" | "decrypt") => {
+  let result
+  switch (method) {
+    case "encrypt":
+      result = CryptoJS.AES.encrypt(JSON.stringify(item), "H0LYG4LUNG4").toString()
+      break
+    case "decrypt":
+      let _ = CryptoJS.AES.decrypt(item, "H0LYG4LUNG4")
+      let _2 = CryptoJS.enc.Utf8.stringify(_)
+      result = JSON.parse(_2)
+      console.log(result)
+  }
+  return result
+}

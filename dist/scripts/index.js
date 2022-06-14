@@ -48,7 +48,7 @@ form.addEventListener("submit", e => {
     e.preventDefault();
     if (input.value.length !== 0 && /\S/.test(input.value)) {
         if (messagePreProcess(input.value)) {
-            socket.emit(!currentUser ? "messageFirst" : "message", input.value, currentUser, replyFormSwitch.message);
+            socket.emit(!currentUser ? "messageFirst" : "message", util.encryptor(input.value, "encrypt"), util.encryptor(currentUser, "encrypt"), util.encryptor(replyFormSwitch.message, "encrypt"));
             formSwitchReset();
         }
         inputHistory.add(input.value);
@@ -58,13 +58,15 @@ form.addEventListener("submit", e => {
 socket.on("initUser", (user) => {
     if (!emotes.isInited)
         emotes.init();
-    currentUser = user;
+    currentUser = util.encryptor(user, "decrypt");
+    console.log(currentUser);
     // let musicPlayer = new Audio()
     // musicPlayer.src = `./audio/saul.opus`
     // musicPlayer.play()
     // musicPlayer.loop = true
 });
 socket.on("message", (message, type) => {
+    message = util.encryptor(message, "decrypt");
     messages.push(message);
     messageConstructor(message, currentUser, type);
     if (message.isImage)

@@ -1,3 +1,4 @@
+let CryptoJS = window.CryptoJS;
 export function createNode(props) {
     let node = document.createElement(props.tag || "div");
     if (props.className) {
@@ -82,4 +83,19 @@ export let bufferToBase64 = (buffer) => {
     // too lazu to figure how this works, good as long as it works
     let base = btoa([].reduce.call(new Uint8Array(buffer), function (p, c) { return p + String.fromCharCode(c); }, ''));
     return base;
+};
+// @ts-ignore
+export let encryptor = (item, method) => {
+    let result;
+    switch (method) {
+        case "encrypt":
+            result = CryptoJS.AES.encrypt(JSON.stringify(item), "H0LYG4LUNG4").toString();
+            break;
+        case "decrypt":
+            let _ = CryptoJS.AES.decrypt(item, "H0LYG4LUNG4");
+            let _2 = CryptoJS.enc.Utf8.stringify(_);
+            result = JSON.parse(_2);
+            console.log(result);
+    }
+    return result;
 };

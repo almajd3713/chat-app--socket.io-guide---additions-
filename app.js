@@ -20,7 +20,21 @@ app.use(express.static(`${__dirname}/dist`))
 app.use(bodyParser.raw({type: "image/*"}))
 app.use(express.json())
 
-
+// encryption
+import CryptoJS from "crypto-js"
+export let encryptor = (item, method) => {
+  let result
+  switch (method) {
+    case "encrypt":
+      result = CryptoJS.AES.encrypt(JSON.stringify(item), "H0LYG4LUNG4").toString()
+      break
+    case "decrypt":
+      let _ = CryptoJS.AES.decrypt(item, "H0LYG4LUNG4")
+      let _2 = CryptoJS.enc.Utf8.stringify(_)
+      result = JSON.parse(_2)
+  }
+  return result
+}
 
 app.get("/", (req, res) => {
   res.sendFile("")
@@ -66,11 +80,11 @@ let idGen = () => {
 io.on("connection", (socket) => {
   socketList.push(socket)
   messages.forEach(message => {
-    socket.emit("message", message, "other")
+    socket.emit("message", encryptor(message, "encrypt"), "other")
   })
   socket.on("messageFirst", (username) => {
     let user = new User({
-      username: username,
+      username: encryptor(username, "decrypt"),
       userId: socket.id,
       color: colorPicker()
     })
@@ -84,22 +98,24 @@ io.on("connection", (socket) => {
       isNotif: [true, "hi"]
     })
     messages.push(message)
-    socket.emit("initUser", user)
-    io.emit("message", message, "other")
+    socket.emit("initUser", encryptor(user, "encrypt"))
+    io.emit("message", encryptor(message, "encrypt"), "other")
   })
 
   socket.on("message", (data, user, replyMessage, image) => {
+    data = encryptor(data, "decrypt")
+    user = encryptor(user, "decrypt")
     let message = new Message({
       content: data, user: user, 
       id: idGen(), messageStructure: false, 
-      isReply: replyMessage
+      isReply: replyMessage ? encryptor(replyMessage, "decrypt") : replyMessage
     })
     if(image) {
       message.isImage = image
     }
     messages.push(message)
-    socket.emit("message", message, "self")
-    socket.broadcast.emit("message", message, "other")
+    socket.emit("message", encryptor(message, "encrypt"), "self")
+    socket.broadcast.emit("message", encryptor(message, "encrypt"), "other")
   })
 
 
